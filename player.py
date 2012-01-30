@@ -22,7 +22,7 @@ class _Player:
         self.walking = False
 
     def step(self, elapsed):
-        # move!
+        # ds = v dt
         self.pos += self.vel * elapsed
 
         # walk timing
@@ -35,7 +35,7 @@ class _Player:
                 self.walking = False
 
     def draw(self):
-        # rectangle
+        # we're a little red square
         rect = pygame.Rect(self.pos.x, self.pos.y, 10, 10)
         pygame.draw.rect(shared.canvas, (255, 0, 0), rect)
 

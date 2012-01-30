@@ -15,50 +15,54 @@ window_dimensions = (640, 480) #(width, height)
 background_color = (0,0,0) #black
 step_time = 40.0
 
-# initialise pygame
-pygame.init()
-clock = pygame.time.Clock()
+def start():
+    shared.objects = []
 
-# initialise window
-shared.canvas = pygame.display.set_mode(window_dimensions)
+    # initialise pygame
+    pygame.init()
+    global clock
+    clock = pygame.time.Clock()
+    shared.canvas = pygame.display.set_mode(window_dimensions)
 
-# test player
-player = player._Player(Vec2d(window_dimensions) / 2)
-shared.objects = [player]
+    # test player
+    shared.objects.append(player._Player(Vec2d(window_dimensions) / 2))
 
-# main loop
-running = True
-while running:
-    # events
+def handleEvents():
+    # pygame events
     for event in pygame.event.get():
-        # quit
         if event.type == pygame.QUIT:
-            running = False
-            break
+            return False
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
-                running = False
-                break
+                return False
             map(lambda o: o.keydown(event), shared.objects)
         if event.type == pygame.KEYUP:
             map(lambda o: o.keyup(event), shared.objects)
 
-    # still running?
-    if not running:
-        break
+    return True
 
-    # action!
-    map(lambda o: o.step(1 / step_time), shared.objects)
+def loop():
+    while True:
+        # events
+        if not handleEvents():
+            break
 
-    # background
-    shared.canvas.fill(background_color)
+        # action!
+        map(lambda o: o.step(1 / step_time), shared.objects)
 
-    # draw stuff
-    map(lambda o: o.draw(), shared.objects)
-    pygame.display.update()
+        # draw pretty things
+        shared.canvas.fill(background_color)
+        map(lambda o: o.draw(), shared.objects)
+        pygame.display.update()
 
-    # not so fast!
-    clock.tick(step_time)
+        # not so fast
+        clock.tick(step_time)
 
-# finish
-pygame.quit()
+def end():
+    pygame.quit()
+
+# play the game!
+start()
+loop()
+end()
+

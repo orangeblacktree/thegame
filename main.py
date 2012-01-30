@@ -5,6 +5,9 @@
 # ------------------------------------------------------------------
 
 import pygame
+import pygtk
+import gtk
+import threading
 
 import shared
 from vec2d import Vec2d
@@ -24,6 +27,11 @@ def start():
     clock = pygame.time.Clock()
     shared.canvas = pygame.display.set_mode(window_dimensions)
 
+    # initialise gtk
+    gtk.threads_init()
+    shared.gtkwin = gtk.Window(gtk.WINDOW_TOPLEVEL)
+    shared.gtkwin.show()
+
     # test player
     shared.objects.append(player._Player(Vec2d(window_dimensions) / 2))
 
@@ -42,6 +50,12 @@ def handleEvents():
     return True
 
 def loop():
+    class GtkLoop(threading.Thread):
+        def run(self):
+            gtk.main()
+    gtkLoop = GtkLoop()
+    gtkLoop.start()
+
     while True:
         # events
         if not handleEvents():
@@ -59,6 +73,10 @@ def loop():
         clock.tick(step_time)
 
 def end():
+    gtk.threads_enter()
+    gtk.main_quit()
+    gtk.threads_leave()
+
     pygame.quit()
 
 # play the game!

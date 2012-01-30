@@ -71,3 +71,4 @@ class _Player:
             self.walking = True
             self.walk_timer = time
             self.vel = vel
+

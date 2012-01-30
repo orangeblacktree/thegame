@@ -27,3 +27,4 @@ def destroy(obj):
 
 def destroy_all():
     map(destroy, world)
+

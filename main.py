@@ -9,44 +9,56 @@ import pygtk
 import gtk
 import threading
 import os
+import sys
+import traceback
 
 from vec2d import Vec2d
 import shared
+import gui
 import objects
 import player
 
-# some settings
-window_dimensions = (640, 480) #(width, height)
+window_pos = (150, 100) #from top-left
+window_size = (800, 600)
+gtk_pos = (150, 100) #from bottom-right
+gtk_size = (640, 480)
+
 background_color = (0,0,0) #black
 step_time = 40.0
 
-def start():
-    # the namespace that user code runs in
-    shared.userspace = {}
+shared.stop_game = False
+shared.userspace = {}
 
+def init():
     # set WM_CLASS under X
     os.environ['SDL_VIDEO_X11_WMCLASS'] = "thegame"
     gtk.gdk.set_program_class("thegame")
 
     # initialise gtk
     gtk.threads_init()
+
     shared.gtkwin = gtk.Window(gtk.WINDOW_TOPLEVEL)
     shared.gtkwin.show()
+    gtkscreen = shared.gtkwin.get_screen()
+    shared.gtkwin.move(gtkscreen.get_width() - gtk_size[0] - gtk_pos[0],
+            gtkscreen.get_height() - gtk_size[1] - gtk_pos[0])
+    shared.gtkwin.resize(*gtk_size)
+
+    gui.init()
 
     # initialise pygame
     pygame.init()
     global clock
     clock = pygame.time.Clock()
-    shared.canvas = pygame.display.set_mode(window_dimensions)
+    os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % window_pos
+    shared.canvas = pygame.display.set_mode(window_size)
 
     # set window titles
-    pygame.display.set_caption("thegame - world", "thegame")
     shared.gtkwin.set_title("thegame - code editor")
+    pygame.display.set_caption("thegame - world", "thegame")
 
-    # create player
-    p = objects.create(player._Player, Vec2d(window_dimensions) / 2)
-
-    # test player proxy
+    # create player, test proxy
+    p = objects.create(player._Player, Vec2d(window_size) / 2)
     shared.userspace['player'] = p.proxy
     exec("player.test()", shared.userspace, shared.userspace)
 
@@ -73,7 +85,7 @@ def loop():
     gtkLoop.start()
 
     # game loop
-    while True:
+    while not shared.stop_game:
         # events
         if not handleEvents():
             break
@@ -99,7 +111,11 @@ def end():
     pygame.quit()
 
 # play the game!
-start()
-loop()
+try:
+    init()
+    loop()
+except Exception, e:
+    tb = sys.exc_info()[2]
+    traceback.print_exception(e.__class__, e, tb)
 end()
 

@@ -13,8 +13,15 @@ from vec2d import Vec2d
 # some settings
 move_speed = 120
 
+# the user's interface to the Player
+class Player:
+    def test(self):
+        objects.proxy_map[self].walk(3, Vec2d(-move_speed, 0))
+
 # the internal Player object
 class _Player:
+    proxy_type = Player
+
     def __init__(self, pos):
         self.pos = pos
         self.vel = Vec2d(0, 0)
@@ -44,6 +51,7 @@ class _Player:
         pygame.draw.rect(shared.canvas, (255, 0, 0), rect)
 
     def keydown(self, event):
+        # temporary key mappings
         keymap = {
             pygame.K_LEFT : Vec2d(-move_speed, 0),
             pygame.K_RIGHT : Vec2d(move_speed, 0),
@@ -58,9 +66,8 @@ class _Player:
         pass
 
     def walk(self, time, vel):
-        if self.walking:
-            return
-
-        self.walking = True
-        self.walk_timer = time
-        self.vel = vel
+        # start walking if not walking already
+        if not self.walking:
+            self.walking = True
+            self.walk_timer = time
+            self.vel = vel

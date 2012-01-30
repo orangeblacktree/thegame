@@ -21,6 +21,9 @@ background_color = (0,0,0) #black
 step_time = 40.0
 
 def start():
+    # the namespace that user code runs in
+    shared.userspace = {}
+
     # set WM_CLASS under X
     os.environ['SDL_VIDEO_X11_WMCLASS'] = "thegame"
     gtk.gdk.set_program_class("thegame")
@@ -40,8 +43,12 @@ def start():
     pygame.display.set_caption("thegame - world", "thegame")
     shared.gtkwin.set_title("thegame - code editor")
 
-    # test player
-    objects.create(player._Player, Vec2d(window_dimensions) / 2)
+    # create player
+    p = objects.create(player._Player, Vec2d(window_dimensions) / 2)
+
+    # test player proxy
+    shared.userspace['player'] = p.proxy
+    exec("player.test()", shared.userspace, shared.userspace)
 
 def handleEvents():
     # pygame events
@@ -83,6 +90,8 @@ def loop():
         clock.tick(step_time)
 
 def end():
+    objects.destroy_all()
+
     gtk.threads_enter()
     gtk.main_quit()
     gtk.threads_leave()

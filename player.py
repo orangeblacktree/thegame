@@ -7,6 +7,7 @@
 import pygame
 
 import shared
+import objects
 from vec2d import Vec2d
 
 # some settings
@@ -20,6 +21,9 @@ class _Player:
 
         # not walking yet
         self.walking = False
+
+    def destroy(self):
+        pass
 
     def step(self, elapsed):
         # ds = v dt
@@ -40,14 +44,15 @@ class _Player:
         pygame.draw.rect(shared.canvas, (255, 0, 0), rect)
 
     def keydown(self, event):
-        if event.key == pygame.K_LEFT:
-            self.walk(1, Vec2d(-move_speed, 0))
-        if event.key == pygame.K_RIGHT:
-            self.walk(1, Vec2d(move_speed, 0))
-        if event.key == pygame.K_UP:
-            self.walk(1, Vec2d(0, -move_speed))
-        if event.key == pygame.K_DOWN:
-            self.walk(1, Vec2d(0, move_speed))
+        keymap = {
+            pygame.K_LEFT : Vec2d(-move_speed, 0),
+            pygame.K_RIGHT : Vec2d(move_speed, 0),
+            pygame.K_UP : Vec2d(0, -move_speed),
+            pygame.K_DOWN : Vec2d(0, move_speed),
+        }
+        vel = keymap.get(event.key)
+        if vel:
+            self.walk(1, vel)
 
     def keyup(self, event):
         pass

@@ -8,9 +8,11 @@ import pygame
 import pygtk
 import gtk
 import threading
+import os
 
-import shared
 from vec2d import Vec2d
+import shared
+import objects
 import player
 
 # some settings
@@ -19,7 +21,14 @@ background_color = (0,0,0) #black
 step_time = 40.0
 
 def start():
-    shared.objects = []
+    # set WM_CLASS under X
+    os.environ['SDL_VIDEO_X11_WMCLASS'] = "thegame"
+    gtk.gdk.set_program_class("thegame")
+
+    # initialise gtk
+    gtk.threads_init()
+    shared.gtkwin = gtk.Window(gtk.WINDOW_TOPLEVEL)
+    shared.gtkwin.show()
 
     # initialise pygame
     pygame.init()
@@ -27,13 +36,12 @@ def start():
     clock = pygame.time.Clock()
     shared.canvas = pygame.display.set_mode(window_dimensions)
 
-    # initialise gtk
-    gtk.threads_init()
-    shared.gtkwin = gtk.Window(gtk.WINDOW_TOPLEVEL)
-    shared.gtkwin.show()
+    # set window titles
+    pygame.display.set_caption("thegame - world", "thegame")
+    shared.gtkwin.set_title("thegame - code editor")
 
     # test player
-    shared.objects.append(player._Player(Vec2d(window_dimensions) / 2))
+    objects.create(player._Player, Vec2d(window_dimensions) / 2)
 
 def handleEvents():
     # pygame events
@@ -43,30 +51,32 @@ def handleEvents():
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 return False
-            map(lambda o: o.keydown(event), shared.objects)
+            map(lambda o: o.keydown(event), objects.world)
         if event.type == pygame.KEYUP:
-            map(lambda o: o.keyup(event), shared.objects)
+            map(lambda o: o.keyup(event), objects.world)
 
     return True
 
 def loop():
+    # run gtk main loop in separate thread
     class GtkLoop(threading.Thread):
         def run(self):
             gtk.main()
     gtkLoop = GtkLoop()
     gtkLoop.start()
 
+    # game loop
     while True:
         # events
         if not handleEvents():
             break
 
         # action!
-        map(lambda o: o.step(1 / step_time), shared.objects)
+        map(lambda o: o.step(1 / step_time), objects.world)
 
         # draw pretty things
         shared.canvas.fill(background_color)
-        map(lambda o: o.draw(), shared.objects)
+        map(lambda o: o.draw(), objects.world)
         pygame.display.update()
 
         # not so fast

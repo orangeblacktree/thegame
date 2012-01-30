@@ -15,8 +15,8 @@ move_speed = 120
 
 # the user's interface to the Player
 class Player:
-    def test(self):
-        objects.proxy_map[self].walk(3, Vec2d(-move_speed, 0))
+    def walk(self, time, vel):
+        objects.proxy_map[self].walk(time, vel)
 
 # the internal Player object
 class _Player:

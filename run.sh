@@ -1,3 +1,3 @@
 #!/bin/sh
 
-python2 main.py
+command -v python2 && python2 main.py || python main.py

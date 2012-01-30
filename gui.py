@@ -197,6 +197,7 @@ class Gui:
         self.text.set_show_line_numbers(True)
         self.text.set_auto_indent(True)
         self.text.set_insert_spaces_instead_of_tabs(True)
+        self.text.set_tab_width(4)
         self.text.set_smart_home_end(True)
 
         font_desc = pango.FontDescription('monospace')

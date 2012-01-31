@@ -14,7 +14,6 @@ import traceback
 
 from vec2d import Vec2d
 import shared
-import userspace
 import gui
 import objects
 import player

@@ -16,7 +16,6 @@ import trace
 import gtksourceview2 as gtksourceview
 
 import shared
-import userspace
 
 class KThread(threading.Thread):
     def __init__(self, *args, **keywords):
@@ -56,7 +55,7 @@ class Runner(KThread):
     def run(self):
         try:
             code = compile(self.text, "code", "exec")
-            exec(code, userspace.space, userspace.space)
+            exec(code, shared.userspace, shared.userspace)
         except Exception as e:
             gtk.threads_enter()
             shared.gui.set_status("Error: " + e.__str__())

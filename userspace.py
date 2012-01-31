@@ -21,10 +21,13 @@ def wait(t):
     if (extra):
         time.sleep(extra)
 
+def myprint(s):
+    print s+"X"
+        
 # the space visible to user code
 space = dict(
         Vec2d = vec2d.Vec2d,
-        wait = wait
+        wait = wait,
         )
 
 # run code in user space
@@ -38,6 +41,10 @@ def resetKeybindings():
         pygame.K_RIGHT: "player.walk('right')",
         pygame.K_UP: "player.walk('up')",
         pygame.K_DOWN: "player.walk('down')",
+    }
+    space['keybindings'] = {
+        pygame.K_LEFT: "paddle.move('left')",
+        pygame.K_RIGHT: "paddle.move('right')",
     }
 
 # run action associated with a keybinding

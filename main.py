@@ -47,6 +47,8 @@ def init():
     shared.gtkwin.move(int(gtk_pos.x), int(gtk_pos.y))
     shared.gtkwin.resize(int(gtk_dim.x), int(gtk_dim.y))
 
+    shared.dim = pygame_dim
+    
     # initialise pygame
     pygame.init()
     global clock
@@ -63,9 +65,13 @@ def init():
     # set keybindings
     userspace.resetKeybindings()
 
-    # create player, test proxy
-    p = objects.create(player._Player, Vec2d(pygame_dim) / 2)
-    userspace.space['player'] = p.proxy
+    # create player
+    # p = objects.create(player._Player, Vec2d(pygame_dim) / 2)
+    # userspace.space['player'] = p.proxy
+    
+    # start breakout level
+    from breakout import Breakout
+    b = Breakout()
 
 def handleEvents():
     # pygame events
@@ -122,10 +128,11 @@ def end():
     pygame.quit()
 
 # play the game!
-try:
-    init()
-    loop()
-except Exception, e:
-    tb = sys.exc_info()[2]
-    traceback.print_exception(e.__class__, e, tb)
-end()
+if __name__ == '__main__':
+    try:
+        init()
+        loop()
+    except Exception, e:
+        tb = sys.exc_info()[2]
+        traceback.print_exception(e.__class__, e, tb)
+    end()

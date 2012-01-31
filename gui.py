@@ -13,6 +13,7 @@ import inspect
 import ctypes
 import sys
 import trace
+import os
 import gtksourceview2 as gtksourceview
 
 import shared
@@ -84,22 +85,22 @@ entries = [
   ("RunMenu", None, "_Run"),
   ("HelpMenu", None, "_Help"),
 
-#  ("Open", gtk.STOCK_OPEN,
-#    "_Open","<control>O",
-#    "Open a file",
-#    do_open), 
-#  ("Save", gtk.STOCK_SAVE,
-#    "_Save","<control>S",
-#    "Save current file",
-#    do_save),
-#  ("SaveAs", gtk.STOCK_SAVE,
-#    "Save _As...", None,
-#    "Save to a file",
-#    do_save_as),
+  ("Open", gtk.STOCK_OPEN,
+    "_Open","<control>O",
+    "Open a file",
+    lambda *args: shared.gui.do_open()), 
+  ("Save", gtk.STOCK_SAVE,
+    "_Save","<control>S",
+    "Save current file",
+    lambda *args: shared.gui.do_save()),
+  ("SaveAs", gtk.STOCK_SAVE,
+    "Save _As...", None,
+    "Save to a file",
+    lambda *args: shared.gui.do_save_as()),
   ("NewTab", gtk.STOCK_ADD,
     "_New Tab", "<Control>N",
     "Make a new tab",
-    lambda *args: shared.gui.add_page()), 
+    lambda *args: shared.gui.new_page()), 
   ("CloseTab", gtk.STOCK_CLOSE,
     "_Close Tab", "<Control>W",
     "Close currently visible tab",
@@ -142,6 +143,9 @@ ui_info ="""
   <menubar name='MenuBar'>
     <menu action='FileMenu'>
       <menuitem action='NewTab'/>
+      <menuitem action='Save'/>
+      <menuitem action='SaveAs'/>
+      <menuitem action='Open'/>
       <menuitem action='CloseTab'/>
       <separator/>
       <menuitem action='NextTab'/>
@@ -170,9 +174,9 @@ codelang = gtksourceview.language_manager_get_default().guess_language("test.py"
 codefont = pango.FontDescription('monospace')
 
 class Page:
-    def __init__(self, gui, label):
-        self.label = label
+    def __init__(self, gui, filename, path = None):
         self.gui = gui
+        self.path = path
 
         # text edit box inside a scrolled window
         self.buf = gtksourceview.Buffer()
@@ -193,13 +197,17 @@ class Page:
 
         # add self to notebook
         gui.nb.append_page(self.sw, None)
-        gui.nb.set_tab_label_text(self.sw, label)
+        self.set_filename(filename)
         gui.window.show_all()
 
     def close(self):
         ind = self.gui.nb.page_num(self.sw)
         self.gui.nb.remove_page(ind)
         self.gui.pages.remove(self)
+
+    def set_filename(self, filename):
+        self.filename = filename
+        self.gui.nb.set_tab_label_text(self.sw, filename)
 
 class Gui:
     def __init__(self):
@@ -256,16 +264,23 @@ class Gui:
                 gtk.EXPAND | gtk.FILL, 0,
                 0,                     0)
 
+        # first tab
+        self.new_page()
+
         # action!
-        self.add_page()
         self.window.show_all()
         self.set_status("Ready!")
         self.focus_page()
 
-    def add_page(self):
-        self.pages.append(Page(self, "Tab %d" % (self.new_page_num)))
-        self.set_page(-1) #last page
+    def new_page(self):
+        self.add_page("new file %d" % (self.new_page_num))
         self.new_page_num += 1
+
+    def add_page(self, name):
+        page = Page(self, name)
+        self.pages.append(page)
+        self.set_page(-1) #last page
+        return page
 
     def set_page(self, ind):
         self.nb.set_current_page(ind)
@@ -295,14 +310,15 @@ class Gui:
             ind = self.get_page()
 
             if (ind >= 0):
+                filename = self.pages[ind].filename
                 buf = self.pages[ind].buf
                 start, end = buf.get_bounds()
-                self.runner = Runner(self.pages[ind].label,
-                        buf.get_text(start, end, False))
+                self.runner = Runner(filename, buf.get_text(start, end, False))
                 self.runner.start()
-                self.set_status("Running...")
+                fmt = "Running '%s'..."
+                self.set_status(fmt % (filename))
         else:
-            fmt = "Currently running code from '%s'... Press Ctrl+E to Cancel."
+            fmt = "Already running '%s'... Press Ctrl+E to Cancel."
             self.set_status(fmt % (self.runner.filename))
 
     def undo(self, *args):
@@ -327,3 +343,91 @@ class Gui:
             self.runner.kill()
             self.runner.join()
 
+    def do_open(self):
+        dialog = gtk.FileChooserDialog("Select file",
+                                       self.window,
+                                       gtk.FILE_CHOOSER_ACTION_OPEN,
+                                       (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
+                                        gtk.STOCK_OPEN, gtk.RESPONSE_OK))
+        dialog.set_default_response(gtk.RESPONSE_OK)
+        response = dialog.run()
+        if response == gtk.RESPONSE_OK:
+            path = dialog.get_filename()
+            self.load_file(path)
+        dialog.destroy()
+    def load_file(self, path):
+        error_dialog = None
+        try:
+            contents = file(path).read()
+        except IOError, ex:
+            error_dialog = gtk.MessageDialog(self.window,
+                                             gtk.DIALOG_DESTROY_WITH_PARENT,
+                                             gtk.MESSAGE_ERROR,
+                                             gtk.BUTTONS_CLOSE,
+                                             "Error loading file %s:\n%s" %
+                                             (path,
+                                              str(ex)))
+        else:
+            try:
+                contents = contents.decode("utf-8")
+            except UnicodeDecodeError:
+                error_dialog = gtk.MessageDialog(self.window,
+                                                 gtk.DIALOG_DESTROY_WITH_PARENT,
+                                                 gtk.MESSAGE_ERROR,
+                                                 gtk.BUTTONS_CLOSE,
+                                                 "Error loading file %s:\n%s" %
+                                                 (path,
+                                                  "Not valid text"))
+            else:
+                page = self.add_page(os.path.basename(path), path)
+                page.buf.set_text(contents)
+        if error_dialog is not None:
+            error_dialog.connect("response", lambda w,resp: w.destroy())
+            error_dialog.show()
+
+    def do_save(self):
+        ind = self.get_page()
+        if ind < 0:
+            return
+        page = self.pages[ind]
+        if not page.path:
+            self.do_save_as()
+        else:
+            self.save_file(page, page.path)
+    def do_save_as(self):
+        ind = self.get_page()
+        if ind < 0:
+            return
+        page = self.pages[ind]
+
+        dialog = gtk.FileChooserDialog("Select file",
+                                       self.window,
+                                       gtk.FILE_CHOOSER_ACTION_SAVE,
+                                       (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
+                                        gtk.STOCK_SAVE, gtk.RESPONSE_OK))
+        dialog.set_default_response(gtk.RESPONSE_OK)
+        response = dialog.run()
+        if response == gtk.RESPONSE_OK:
+            path = dialog.get_filename()
+            self.save_file(page, path)
+        dialog.destroy()
+    def save_file(self, page, path):
+        start, end = page.buf.get_bounds()
+        text = page.buf.get_text(start, end, False)
+
+        error_dialog = None
+        try:
+            file(path, "w").write(text)
+        except IOError, ex:
+            error_dialog = gtk.MessageDialog(self.window,
+                                             gtk.DIALOG_DESTROY_WITH_PARENT,
+                                             gtk.MESSAGE_ERROR,
+                                             gtk.BUTTONS_CLOSE,
+                                             "Error saving to file %s:\n%s" %
+                                             (open_filename,
+                                              str(ex)))
+            error_dialog.connect("response", lambda w,resp: w.destroy())
+            error_dialog.show()
+        else:
+            page.set_filename(os.path.basename(path))
+            page.path = path

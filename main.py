@@ -24,10 +24,11 @@ gtk_pos = (150, 100) #from bottom-right
 gtk_size = (640, 480)
 
 background_color = (0,0,0) #black
-step_time = 40.0
+fps = 40.0
 
 shared.stop_game = False
 shared.userspace = {}
+shared.userspace['__builtins__'] = None
 
 def init():
     # set WM_CLASS under X
@@ -57,10 +58,24 @@ def init():
     shared.gtkwin.set_title("thegame - code editor")
     pygame.display.set_caption("thegame - world", "thegame")
 
-    # create player, test proxy
+    # create player
     p = objects.create(player._Player, Vec2d(window_size) / 2)
     shared.userspace['player'] = p.proxy
-    exec("player.test()", shared.userspace, shared.userspace)
+
+    # set keybindings
+    resetKeybindings()
+
+def resetKeybindings():
+    # set default keybindings
+    shared.userspace['keybindings'] = {
+        pygame.K_LEFT: "player.walk('left')",
+        pygame.K_RIGHT: "player.walk('right')",
+        pygame.K_UP: "player.walk('up')",
+        pygame.K_DOWN: "print 'x'; import shared; print shared.userspace;",
+    }
+
+def safe_exec(code):
+    exec(code, shared.userspace, shared.userspace)
 
 def handleEvents():
     # pygame events
@@ -70,9 +85,12 @@ def handleEvents():
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 return False
-            map(lambda o: o.keydown(event), objects.world)
-        if event.type == pygame.KEYUP:
-            map(lambda o: o.keyup(event), objects.world)
+
+            if 'keybindings' not in shared.userspace or type(shared.userspace['keybindings']) is not dict:
+                resetKeybindings()
+            if event.key in shared.userspace['keybindings']:
+                code = shared.userspace['keybindings'][event.key]
+                safe_exec(code)
 
     return True
 
@@ -91,7 +109,7 @@ def loop():
             break
 
         # action!
-        map(lambda o: o.step(1 / step_time), objects.world)
+        map(lambda o: o.step(1 / fps), objects.world)
 
         # draw pretty things
         shared.canvas.fill(background_color)
@@ -99,7 +117,7 @@ def loop():
         pygame.display.update()
 
         # not so fast
-        clock.tick(step_time)
+        clock.tick(fps)
 
 def end():
     objects.destroy_all()
@@ -118,4 +136,3 @@ except Exception, e:
     tb = sys.exc_info()[2]
     traceback.print_exception(e.__class__, e, tb)
 end()
-

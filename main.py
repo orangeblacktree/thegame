@@ -1,4 +1,4 @@
-# ------------------------------------------------------------------
+# ------------------------------------------------------------------)
 # main.py
 # 
 # Initialise stuff, handle events, main loop
@@ -19,13 +19,8 @@ import gui
 import objects
 import player
 
-window_pos = (150, 100) #from top-left
-window_size = (800, 600)
-gtk_pos = (150, 100) #from bottom-right
-gtk_size = (640, 480)
-
 background_color = (0,0,0) #black
-step_time = 40.0
+frame_rate = 40.0
 
 shared.stop_game = False
 
@@ -36,30 +31,37 @@ def init():
 
     # initialise gtk
     gtk.threads_init()
-
     shared.gtkwin = gtk.Window(gtk.WINDOW_TOPLEVEL)
-    shared.gtkwin.show()
-    gtkscreen = shared.gtkwin.get_screen()
-    shared.gtkwin.move(gtkscreen.get_width() - gtk_size[0] - gtk_pos[0],
-            gtkscreen.get_height() - gtk_size[1] - gtk_pos[0])
-    shared.gtkwin.resize(*gtk_size)
-
     shared.gui = gui.Gui()
-    shared.gui.init()
+
+    # window sizes/positions
+    gtkscreen = shared.gtkwin.get_screen()
+    dim = Vec2d(gtkscreen.get_width(), 
+            gtkscreen.get_height())
+
+    pygame_pos = dim * 0.01
+    pygame_dim = dim * (0.65, 0.75)
+    gtk_pos = dim * (0.55, 0.4)
+    gtk_dim = dim * (0.44, 0.55)
+
+    shared.gtkwin.move(int(gtk_pos.x), int(gtk_pos.y))
+    shared.gtkwin.resize(int(gtk_dim.x), int(gtk_dim.y))
 
     # initialise pygame
     pygame.init()
     global clock
     clock = pygame.time.Clock()
-    os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % window_pos
-    shared.canvas = pygame.display.set_mode(window_size)
+    os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (pygame_pos.x, pygame_pos.y)
+    shared.canvas = pygame.display.set_mode((int(pygame_dim.x), 
+        int(pygame_dim.y)))
 
     # set window titles
+    shared.gtkwin.show()
     shared.gtkwin.set_title("thegame - code editor")
     pygame.display.set_caption("thegame - world", "thegame")
 
     # create player, test proxy
-    p = objects.create(player._Player, Vec2d(window_size) / 2)
+    p = objects.create(player._Player, Vec2d(pygame_dim) / 2)
     userspace.space['player'] = p.proxy
 
 def handleEvents():
@@ -92,7 +94,7 @@ def loop():
 
         # action!
         # TODO: fix elapsed time handling!
-        elapsed = 1 / step_time
+        elapsed = 1 / frame_rate
         map(lambda o: o.step(elapsed), objects.world)
         shared.gui.step(elapsed)
 
@@ -102,7 +104,7 @@ def loop():
         pygame.display.update()
 
         # not so fast
-        clock.tick(step_time)
+        clock.tick(frame_rate)
 
 def end():
     objects.destroy_all()

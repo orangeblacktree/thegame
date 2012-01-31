@@ -60,6 +60,9 @@ def init():
     shared.gtkwin.set_title("thegame - code editor")
     pygame.display.set_caption("thegame - world", "thegame")
 
+    # set keybindings
+    userspace.resetKeybindings()
+
     # create player, test proxy
     p = objects.create(player._Player, Vec2d(pygame_dim) / 2)
     userspace.space['player'] = p.proxy
@@ -72,9 +75,8 @@ def handleEvents():
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 return False
-            map(lambda o: o.keydown(event), objects.world)
-        if event.type == pygame.KEYUP:
-            map(lambda o: o.keyup(event), objects.world)
+
+            userspace.doKey(event.key)
 
     return True
 
@@ -125,4 +127,3 @@ except Exception, e:
     tb = sys.exc_info()[2]
     traceback.print_exception(e.__class__, e, tb)
 end()
-

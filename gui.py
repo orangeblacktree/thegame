@@ -57,7 +57,7 @@ class Runner(KThread):
     def run(self):
         try:
             code = compile(self.text, self.filename, "exec")
-            exec(code, userspace.space, userspace.space)
+            userspace.run(code)
         except Exception as e:
             gtk.threads_enter()
             shared.gui.set_status("Error: " + e.__str__())

@@ -190,7 +190,6 @@ class Page:
         self.text.set_smart_home_end(True)
         if codefont:
             self.text.modify_font(codefont)
-        self.text.grab_focus()
 
         # add self to notebook
         gui.nb.append_page(self.sw, None)
@@ -260,8 +259,8 @@ class Gui:
         # action!
         self.add_page()
         self.window.show_all()
-        self.nb.grab_focus()
         self.set_status("Ready!")
+        self.focus_page()
 
     def add_page(self):
         self.pages.append(Page(self, "Tab %d" % (self.new_page_num)))
@@ -278,7 +277,7 @@ class Gui:
     def prev_page(self):
         self.nb.prev_page()
 
-    def focus_page():
+    def focus_page(self):
         ind = self.get_page()
         if ind >= 0:
             self.pages[ind].text.grab_focus()

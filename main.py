@@ -85,8 +85,9 @@ def loop():
     class GtkLoop(threading.Thread):
         def run(self):
             gtk.main()
-    gtkLoop = GtkLoop()
-    gtkLoop.start()
+    global gtk_thread
+    gtk_thread = GtkLoop()
+    gtk_thread.start()
 
     # game loop
     while not shared.stop_game:
@@ -116,6 +117,7 @@ def end():
     gtk.threads_enter()
     gtk.main_quit()
     gtk.threads_leave()
+    gtk_thread.join()
 
     pygame.quit()
 

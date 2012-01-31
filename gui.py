@@ -170,10 +170,10 @@ class Gui:
         bar = ui.get_widget("/MenuBar")
         bar.show()
         self.table.attach(bar, 
-                     # /* X direction */       /* Y direction */
-                     0, 1,                      0, 1,
-                     gtk.EXPAND | gtk.FILL,     0,
-                     0,                         0)
+                # X                    # Y
+                0, 1,                  0, 1,
+                gtk.EXPAND | gtk.FILL, 0,
+                0,                     0)
 
         # text edit box
         self.sw = gtk.ScrolledWindow()

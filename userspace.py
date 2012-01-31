@@ -17,7 +17,6 @@ wait_block = 1
 def wait(t):
     loops = t // wait_block
     extra = t - float(loops * wait_block)
-    print loops, extra
 
     while loops > 0:
         loops -= 1

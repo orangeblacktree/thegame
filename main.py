@@ -14,6 +14,7 @@ import traceback
 
 from vec2d import Vec2d
 import shared
+import userspace
 import gui
 import objects
 import player
@@ -27,8 +28,6 @@ background_color = (0,0,0) #black
 fps = 40.0
 
 shared.stop_game = False
-shared.userspace = {}
-shared.userspace['__builtins__'] = None
 
 def init():
     # set WM_CLASS under X
@@ -45,7 +44,8 @@ def init():
             gtkscreen.get_height() - gtk_size[1] - gtk_pos[0])
     shared.gtkwin.resize(*gtk_size)
 
-    gui.init()
+    shared.gui = gui.Gui()
+    shared.gui.init()
 
     # initialise pygame
     pygame.init()
@@ -109,7 +109,10 @@ def loop():
             break
 
         # action!
-        map(lambda o: o.step(1 / fps), objects.world)
+        # TODO: fix elapsed time handling!
+        elapsed = 1 / fps
+        map(lambda o: o.step(elapsed), objects.world)
+        shared.gui.step(elapsed)
 
         # draw pretty things
         shared.canvas.fill(background_color)
@@ -121,6 +124,8 @@ def loop():
 
 def end():
     objects.destroy_all()
+
+    shared.gui.quit()
 
     gtk.threads_enter()
     gtk.main_quit()

@@ -14,10 +14,24 @@ class LevelManager:
     def parse_level_list(self, path):
         f = open(path, 'r')
         for line in f:
-            print line
-        pass
+            if line[0] == '#':
+                continue
 
-    def add_level(self, ind, modulename, deps):
+            words = line.split()
+
+            ind = int(words.pop(0))
+
+            nextind = 0
+            if words[0].isdigit():
+                nextind = int(words.pop(0))
+
+            modulename = words.pop(0)
+
+            deps = list(map(int, words))
+
+            print ind, nextind, modulename, deps
+
+    def add_level(self, ind, nextind, modulename, deps):
         pass
 
     # start the game
@@ -27,7 +41,7 @@ class LevelManager:
         pass
 
     # stop the game
-    def stop(self, elapsed):
+    def stop(self):
         if self.current_level >= 0:
             self.levels[self.current_level].stop()
         self.current_level = -1

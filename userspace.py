@@ -7,6 +7,7 @@
 import time
 import vec2d
 import pygame
+import keymap
 
 # a 'wait()' function for user code - sleep in blocks to allow
 # cancelling
@@ -34,16 +35,17 @@ def run(code):
 # reset keybindings to defaults
 def resetKeybindings():
     space['keybindings'] = {
-        pygame.K_LEFT: "player.walk('left')",
-        pygame.K_RIGHT: "player.walk('right')",
-        pygame.K_UP: "player.walk('up')",
-        pygame.K_DOWN: "player.walk('down')",
+        'left': "player.walk('left')",
+        'right': "player.walk('right')",
+        'up': "player.walk('up')",
+        'down': "player.walk('down')",
     }
 
 # run action associated with a keybinding
-def doKey(key):
+def doKey(keycode):
     if 'keybindings' not in space or type(space['keybindings']) is not dict:
         resetKeybindings()
-    if key in space['keybindings']:
-        code = space['keybindings'][key]
+
+    code = space['keybindings'].get(keymap.key_to_str[keycode])
+    if code:
         run(code)

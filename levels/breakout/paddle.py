@@ -10,7 +10,7 @@ move_speed = 200
 # the user's interface to the Paddle
 class Paddle:
     def getPos(self):
-        return Vec2d(objects.proxy_map[self].getPos())
+        return objects.proxy_map[self].getPos()
         
     def left(self):
         objects.proxy_map[self].left()
@@ -44,8 +44,8 @@ class _Paddle:
         rect = pygame.Rect(self.pos.x, self.pos.y, self.dim.x, self.dim.y)
         pygame.draw.rect(shared.canvas, (255, 0, 0), rect)
 
-    def getPos(self): #make sure to return a copy
-        return self.pos
+    def getPos(self):
+        return Vec2d(self.pos)
         
     def left(self):
         self.dir = -1

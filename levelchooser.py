@@ -5,6 +5,7 @@ import objects
 import userspace
 
 from levelchoice import LevelChoice, _LevelChoice
+from Text import Text, _Text
 
 class LevelChooser:
     def __init__(self):
@@ -15,5 +16,7 @@ class LevelChooser:
             "enter" : "selectLevel()"
         }
         levels = os.listdir("./levels/")
+        t = objects.create(_Text)
+        t.update(text="Choose your level", pos=(30, 10), size=64, color=(255,150,150))
         for i, name in enumerate(levels):
             objects.create(_LevelChoice, i, name)

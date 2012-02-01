@@ -16,8 +16,8 @@ from vec2d import Vec2d
 import shared
 import userspace
 import gui
+import levelmanager
 import objects
-import player
 
 background_color = (0,0,0) #black
 frame_rate = 40.0
@@ -66,13 +66,9 @@ def init():
     # set keybindings
     userspace.resetKeybindings()
 
-    # create player
-    # p = objects.create(player._Player, Vec2d(pygame_dim) / 2)
-    # userspace.space['player'] = p.proxy
-    
-    # start breakout level
-    from levelchooser import LevelChooser
-    level = LevelChooser() 
+    # start the game!
+    shared.levelmgr = levelmanager.LevelManager()
+    #shared.levelmgr.start()
 
 def handleEvents():
     # pygame events

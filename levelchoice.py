@@ -1,3 +1,7 @@
+import pygame
+import shared
+import objects
+
 class LevelChoice:
     def select(self):
         pass
@@ -9,6 +13,9 @@ class _LevelChoice:
     def __init__(self, index, name):
         self.index = index
         self.name = name
+        self.font = pygame.font.Font(None, 64)
+        self.text = self.font.render(self.name, 1, (255, 255, 255)) 
+
         
     def destroy(self):
         pass
@@ -18,8 +25,7 @@ class _LevelChoice:
         
     def draw(self):
         if pygame.font:
-            font = pygame.font.Font(None, 18)
-            shared.canvas.blit(name, (30, 50*self.index))
+            shared.canvas.blit(self.text, (30, 50*(1+self.index)))
         
         
     def select(self):

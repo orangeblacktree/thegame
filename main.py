@@ -72,11 +72,7 @@ def init():
     
     # start breakout level
     from levelchooser import LevelChooser
-<<<<<<< HEAD
     level = LevelChooser() 
-=======
-    b = LevelChooser()
->>>>>>> origin/levelselect
 
 def handleEvents():
     # pygame events

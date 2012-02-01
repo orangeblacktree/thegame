@@ -1,7 +1,7 @@
 # run this in-game
 
-keybindings["left"] = "paddle.move('left')"
-keybindings["right"] = "paddle.move('right')"
+keybindings["left"] = "paddle.left()"
+keybindings["right"] = "paddle.right()"
 
 def move_to_x(x):
     # keep moving paddle to (paddle.y, x) until ball gets low

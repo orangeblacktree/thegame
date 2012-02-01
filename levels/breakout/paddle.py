@@ -10,14 +10,16 @@ move_speed = 200
 # the user's interface to the Paddle
 class Paddle:
     def getPos(self):
-        return objects.proxy_map[self].getPos()
-
-    def move(self, direction):
-        vel = {
-            "left" : Vec2d(-move_speed, 0),
-            "right" : Vec2d(move_speed, 0),
-        }[direction]
-        objects.proxy_map[self].walk(0.05, vel)
+        return Vec2d(objects.proxy_map[self].getPos())
+        
+    def left(self):
+        objects.proxy_map[self].left()
+        
+    def right(self):
+        objects.proxy_map[self].right()
+        
+    def stop(self):
+        objects.proxy_map[self].stop()
 
 # the internal Paddle object
 class _Paddle:
@@ -26,24 +28,16 @@ class _Paddle:
     def __init__(self, pos):
         self.pos = pos
         self.dim = Vec2d(40, 10)
-        self.vel = Vec2d(0, 0)
 
         # not walking yet
-        self.walking = False
+        self.dir = 0
 
     def destroy(self):
         pass
 
     def step(self, elapsed):
         # ds = v dt
-        self.pos += self.vel * elapsed
-
-        # walk timing
-        if self.walking:
-            self.walk_timer -= elapsed
-            if self.walk_timer <= 0:
-                self.vel = Vec2d(0, 0)
-                self.walking = False
+        self.pos += Vec2d(move_speed * self.dir * elapsed, 0)
 
     def draw(self):
         # we're a little red rectangle
@@ -53,7 +47,11 @@ class _Paddle:
     def getPos(self): #make sure to return a copy
         return self.pos
         
-    def walk(self, time, vel):
-        self.walking = True
-        self.walk_timer = time
-        self.vel = vel
+    def left(self):
+        self.dir = -1
+        
+    def right(self):
+        self.dir = +1
+        
+    def stop(self):
+        self.dir = 0

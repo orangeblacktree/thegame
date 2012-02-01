@@ -114,7 +114,7 @@ entries = [
     "Switch to previous tab",
     lambda *args: shared.gui.prev_page()), 
   ("Quit", gtk.STOCK_QUIT,
-    "_Quit", "Escape",
+    "_Quit", "<Control>Q",
     "Exit the program",
     do_quit), 
 
@@ -379,7 +379,8 @@ class Gui:
                                                  (path,
                                                   "Not valid text"))
             else:
-                page = self.add_page(os.path.basename(path), path)
+                page = self.add_page(os.path.basename(path))
+                page.path = path
                 page.buf.set_text(contents)
         if error_dialog is not None:
             error_dialog.connect("response", lambda w,resp: w.destroy())

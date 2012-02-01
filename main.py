@@ -48,6 +48,7 @@ def init():
     shared.gtkwin.resize(int(gtk_dim.x), int(gtk_dim.y))
 
     shared.dim = pygame_dim
+    userspace.space['window_dim'] = pygame_dim
     
     # initialise pygame
     pygame.init()

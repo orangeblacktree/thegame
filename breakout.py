@@ -12,7 +12,7 @@ import objects
 from vec2d import Vec2d
 
 # some settings
-move_speed = 50
+move_speed = 200
 
 class Breakout:
     def __init__(self):
@@ -85,6 +85,7 @@ class _Ball:
         if self.pos.y > shared.dim.y - self.radius or self.pos.y < self.radius:
             self.vel.y *= -1
             
+        # collide
         for loc in self.bricks:
             brick = self.bricks[loc]
             if brick.broken:
@@ -100,7 +101,6 @@ class _Ball:
             if self.pos.y > self.paddle.pos.y - self.radius and self.pos.x > self.paddle.pos.x - self.radius and self.pos.x < self.paddle.pos.x + self.paddle.dim.x - self.radius:
                 self.vel.y *= -1
                 
-        # collide
         
     def draw(self):
         # we're a little blue circle
@@ -117,7 +117,7 @@ class Paddle:
             "left" : Vec2d(-move_speed, 0),
             "right" : Vec2d(move_speed, 0),
         }[direction]
-        objects.proxy_map[self].walk(1, vel)
+        objects.proxy_map[self].walk(0.2, vel)
 
 # the internal Paddle object
 class _Paddle:
@@ -154,8 +154,6 @@ class _Paddle:
         return self.pos
         
     def walk(self, time, vel):
-        # start walking if not walking already
-        if not self.walking:
-            self.walking = True
-            self.walk_timer = time
-            self.vel = vel
+        self.walking = True
+        self.walk_timer = time
+        self.vel = vel

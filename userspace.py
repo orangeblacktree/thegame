@@ -47,6 +47,10 @@ def resetKeybindings():
         pygame.K_LEFT: "paddle.move('left')",
         pygame.K_RIGHT: "paddle.move('right')",
     }
+    space['keybindings'] = {
+        pygame.K_LEFT: "paddle.move('left')",
+        pygame.K_RIGHT: "paddle.move('right')",
+    }
 
 # run action associated with a keybinding
 def doKey(keycode):

@@ -15,12 +15,10 @@ class Ball:
 class _Ball:
     proxy_type = Ball
     
-    def __init__(self, pos, bricks, paddle):
+    def __init__(self, pos):
         self.radius = 10
         self.pos = pos
         self.vel = Vec2d(100,100)
-        self.bricks = bricks
-        self.paddle = paddle
         
     def getPos(self): #make sure to return a copy
         return self.pos
@@ -34,23 +32,6 @@ class _Ball:
             self.vel.x *= -1
         if self.pos.y > shared.dim.y - self.radius or self.pos.y < self.radius:
             self.vel.y *= -1
-            
-        # collide
-        for loc in self.bricks:
-            brick = self.bricks[loc]
-            if brick.broken:
-                continue
-            if ((self.pos.y > brick.pos.y - self.radius and self.pos.y <  brick.pos.y + brick.dim.y + self.radius) and
-               (self.pos.x > brick.pos.x - self.radius and self.pos.x <  brick.pos.x + brick.dim.x + self.radius)):
-                brick.broken = True
-                if self.pos.x > brick.pos.x+brick.dim.x or self.pos.x < brick.pos.x:
-                    self.vel.y *= -1 + random.random()-.5
-                if self.pos.y > brick.pos.y+brick.dim.y or self.pos.y < brick.pos.y:
-                    self.vel.x *= -1 + random.random()-.5
-                    
-            if self.pos.y > self.paddle.pos.y - self.radius and self.pos.x > self.paddle.pos.x - self.radius and self.pos.x < self.paddle.pos.x + self.paddle.dim.x + self.radius:
-                self.vel.y = -abs(self.vel.y)
-                
         
     def draw(self):
         # we're a little blue circle

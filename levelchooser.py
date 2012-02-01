@@ -5,7 +5,7 @@ import objects
 import userspace
 
 from levelchoice import LevelChoice, _LevelChoice
-from Text import Text, _Text
+from text import Text, _Text
 
 class LevelChooser:
     def __init__(self):

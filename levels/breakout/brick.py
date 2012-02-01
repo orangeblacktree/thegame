@@ -13,7 +13,7 @@ class _Brick:
     
     def __init__(self, pos):
         self.pos = pos
-        self.dim = Vec2d(40,20)
+        self.dim = Vec2d(38,18)
         self.broken = False
         
     def getPos(self):

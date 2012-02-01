@@ -1,7 +1,7 @@
 # ------------------------------------------------------------------
 # breakout.py
 # 
-# Player!
+# Breakout Level!
 # ------------------------------------------------------------------
 
 import pygame
@@ -16,7 +16,7 @@ from paddle import Paddle, _Paddle
 from ball import Ball, _Ball
 
 class Breakout:
-    def __init__(self):
+    def start(self):
         paddle = objects.create(_Paddle, Vec2d(int(shared.dim.x/2), int(shared.dim.y - 20)))
         bricks = {}
         _bricks = {}
@@ -30,3 +30,10 @@ class Breakout:
         userspace.space['bricks'] = bricks
         userspace.space['ball'] = ball.proxy
         userspace.space['paddle'] = paddle.proxy
+
+    def stop(self):
+        pass
+        
+    def step(self):
+        pass
+        

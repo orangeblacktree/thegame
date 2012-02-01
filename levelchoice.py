@@ -17,7 +17,10 @@ class _LevelChoice:
         pass
         
     def draw(self):
-        pass
+        if pygame.font:
+            font = pygame.font.Font(None, 18)
+            shared.canvas.blit(name, (30, 50*self.index))
+        
         
     def select(self):
         pass

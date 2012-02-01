@@ -71,8 +71,8 @@ def init():
     # userspace.space['player'] = p.proxy
     
     # start breakout level
-    from breakout import Breakout
-    b = Breakout()
+    from levelchooser import LevelChooser
+    level = LevelChooser() 
 
 def handleEvents():
     # pygame events

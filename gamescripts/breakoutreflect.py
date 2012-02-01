@@ -1,5 +1,8 @@
 # run this in-game
 
+keybindings["left"] = "paddle.move('left')"
+keybindings["right"] = "paddle.move('right')"
+
 def move_to_x(x):
     # keep moving paddle to (paddle.y, x) until ball gets low
     while ball.getPos().y < window_dim.y - 40:

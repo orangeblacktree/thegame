@@ -4,6 +4,8 @@ import shared
 import objects
 from vec2d import Vec2d
 
+import random
+
 # the user's interface to the Ball
 class Ball:
     def getPos(self):
@@ -42,9 +44,9 @@ class _Ball:
                (self.pos.x > brick.pos.x - self.radius and self.pos.x <  brick.pos.x + brick.dim.x + self.radius)):
                 brick.broken = True
                 if self.pos.x > brick.pos.x+brick.dim.x or self.pos.x < brick.pos.x:
-                    self.vel.y *= -1
+                    self.vel.y *= -1 + random.random()-.5
                 if self.pos.y > brick.pos.y+brick.dim.y or self.pos.y < brick.pos.y:
-                    self.vel.x *= -1
+                    self.vel.x *= -1 + random.random()-.5
                     
             if self.pos.y > self.paddle.pos.y - self.radius and self.pos.x > self.paddle.pos.x - self.radius and self.pos.x < self.paddle.pos.x + self.paddle.dim.x + self.radius:
                 self.vel.y = -abs(self.vel.y)

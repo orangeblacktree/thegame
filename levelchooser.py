@@ -1,5 +1,5 @@
+import pygame
 import os
-
 import shared
 import objects
 import userspace
@@ -14,9 +14,6 @@ class LevelChooser:
             "down" : "moveDown()",
             "enter" : "selectLevel()"
         }
-        
         levels = os.listdir("./levels/")
         for i, name in enumerate(levels):
             objects.create(_LevelChoice, i, name)
-            
-    

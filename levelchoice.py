@@ -1,6 +1,6 @@
 class LevelChoice:
     def select(self):
-        pass
+        objects.proxy_map[self].select()
     
     
 class _LevelChoice:

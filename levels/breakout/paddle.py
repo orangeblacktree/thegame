@@ -17,7 +17,7 @@ class Paddle:
             "left" : Vec2d(-move_speed, 0),
             "right" : Vec2d(move_speed, 0),
         }[direction]
-        objects.proxy_map[self].walk(0.2, vel)
+        objects.proxy_map[self].walk(0.05, vel)
 
 # the internal Paddle object
 class _Paddle:

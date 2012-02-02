@@ -8,6 +8,7 @@ class LevelManager:
     def __init__(self):
         self.levels = []
         self.current_level = -1
+        self.requested_level = -1
 
         self.parse_level_list("levels/list")
 
@@ -15,30 +16,29 @@ class LevelManager:
         f = open(path, 'r')
         for line in f:
             if line[0] == '#':
-                continue
+                continue #skip comments
 
             words = line.split()
 
             ind = int(words.pop(0))
 
             nextind = 0
-            if words[0].isdigit():
+            if words[0].isdigit(): #might skip nextind, 0 by default
                 nextind = int(words.pop(0))
 
             modulename = words.pop(0)
 
             deps = list(map(int, words))
 
-            print ind, nextind, modulename, deps
+            self.add_level(ind, nextind, modulename, deps)
 
     def add_level(self, ind, nextind, modulename, deps):
         pass
 
     # start the game
     def start(self):
-        if self.current_level <= -1:
+        if self.current_level < 0:
             self.goto_level(0)
-        pass
 
     # stop the game
     def stop(self):
@@ -52,16 +52,30 @@ class LevelManager:
             self.levels[self.current_level].stop()
         self.current_level = ind
         self.levels[self.current_level].start()
+    def request_goto_level(self, ind):
+        self.requested_level = ind
 
     # go to the next level
     def next_level(self):
         if current_level < 0:
-            self.start()
+            self.goto_level(0)
         else:
             nxt = self.levels[self.current_level].next_level
             self.goto_level(nxt)
+    def request_next_level(self):
+        if current_level < 0:
+            self.request_goto_level(0)
+        else:
+            nxt = self.levels[self.current_level].next_level
+            self.request_goto_level(nxt)
 
     # notify current level of step event
     def step(self, elapsed):
         if self.current_level >= 0:
             self.levels[self.current_level].step(self, elapsed)
+
+    # handle level switch requests
+    def handle_requests(self):
+        if self.requested_level >= 0:
+            self.goto_level(self.requested_level)
+            self.requested_level = -1

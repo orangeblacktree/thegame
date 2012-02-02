@@ -73,9 +73,6 @@ class Runner(KThread):
             gtk.threads_leave()
         shared.gui.runner = None
 
-def do_about(*args):
-    pass
-
 def do_quit(*args):
     shared.stop_game = True
 
@@ -83,7 +80,6 @@ entries = [
   ("FileMenu", None, "_File"),
   ("EditMenu", None, "_Edit"),
   ("RunMenu", None, "_Run"),
-  ("HelpMenu", None, "_Help"),
 
   ("Open", gtk.STOCK_OPEN,
     "_Open","<control>O",
@@ -121,7 +117,7 @@ entries = [
   ("Undo", gtk.STOCK_UNDO,
     "_Undo", "<control>Z",
     "Undo",
-    lambda *args: shared.gui.undo()), 
+    lambda *args: shared.gui.undo()),
 
   ("Run", gtk.STOCK_MEDIA_PLAY,
     "_Run", "<control>R",
@@ -131,11 +127,6 @@ entries = [
     "_Cancel", "<control>E",
     "Cancel",
     lambda *args: shared.gui.cancel()), 
-
-  ("About", None,
-    "_About", "<control>A",
-    "About",
-    do_about),
 ]
 
 ui_info ="""
@@ -162,10 +153,7 @@ ui_info ="""
       <menuitem action='Run'/>
       <menuitem action='Cancel'/>
     </menu>
-
-    <menu action='HelpMenu'>
-      <menuitem action='About'/>
-    </menu>
+    
   </menubar>
 </ui>
 """
@@ -291,6 +279,14 @@ class Gui:
         self.nb.next_page()
     def prev_page(self):
         self.nb.prev_page()
+        
+    def undo(self, *args):
+        ind = self.get_page()
+
+        if (ind >= 0):
+            buf = self.pages[ind].buf
+            if buf.can_undo():
+                buf.undo()
 
     def focus_page(self):
         ind = self.get_page()
@@ -320,14 +316,6 @@ class Gui:
         else:
             fmt = "Already running '%s'... Press Ctrl+E to Cancel."
             self.set_status(fmt % (self.runner.filename))
-
-    def undo(self, *args):
-        ind = self.get_page()
-
-        if (ind >= 0):
-            buf = self.pages[ind].buf
-            if buf.can_undo():
-                buf.undo()
 
     def set_status(self, msg):
         self.status.pop(0)

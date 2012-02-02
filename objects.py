@@ -6,6 +6,7 @@
 
 world = []
 proxy_map = {}
+destroy_requests = []
 
 def create(cons, *args):
     obj = cons(*args)
@@ -19,6 +20,12 @@ def create(cons, *args):
 
     return obj
 
+def handleRequests():
+    map(destroy, destroy_requests)
+    
+def requestDestroy(obj):
+    destroy_requests.append(obj)
+    
 def destroy(obj):
     if hasattr(obj, 'proxy'):
         del proxy_map[obj.proxy]

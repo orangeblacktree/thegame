@@ -104,6 +104,8 @@ def loop():
         map(lambda o: o.step(elapsed), objects.world)
         shared.gui.step(elapsed)
 
+        objects.handleRequests()
+        
         # draw pretty things
         shared.canvas.fill(background_color)
         map(lambda o: o.draw(), objects.world)

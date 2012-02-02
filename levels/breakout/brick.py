@@ -15,7 +15,10 @@ class _Brick:
     
     def __init__(self, pos):
         self.pos = pos
-        self.dim = Vec2d(38,18)
+        self.x = pos.x
+        self.y = pos.y
+        self.width = pos.width
+        self.height = pos.height
         self.broken = False
         
     def getPos(self):
@@ -29,5 +32,4 @@ class _Brick:
         
     def draw(self):
         if not self.broken:
-            loc = (int(self.pos.x), int(self.pos.y), 38, 18)
-            pygame.draw.rect(shared.canvas, (255, 0, 0), loc)
+            pygame.draw.rect(shared.canvas, (255, 0, 0), self.pos)

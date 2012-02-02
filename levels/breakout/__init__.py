@@ -12,6 +12,7 @@ import userspace
 import objects
 from vec2d import Vec2d
 
+import collisions
 from level import Level
 
 from brick import Brick, _Brick
@@ -34,7 +35,7 @@ class Main(Level):
         self._bricks = {}
         for row in xrange(0, 10):
             for col in xrange(0, int(shared.dim.x/40)):
-                brick = objects.create(_Brick, Vec2d(40,20)*(col,row) + (5,5))
+                brick = objects.create(_Brick, pygame.Rect(40*col + 5, 20*row + 5, 38, 18))
                 bricks[(row, col)] = brick.proxy
                 self._bricks[(row, col)] = brick
                 
@@ -58,12 +59,13 @@ class Main(Level):
             if brick.broken:
                 continue
                 
-            if ((ball.pos.y > brick.pos.y - ball.radius and ball.pos.y <  brick.pos.y + brick.dim.y + ball.radius) and
-               (ball.pos.x > brick.pos.x - ball.radius and ball.pos.x <  brick.pos.x + brick.dim.x + ball.radius)):
+            ballRect = pygame.Rect(ball.pos.x - ball.radius, ball.pos.y - ball.radius, 2*ball.radius, 2*ball.radius)
+            if (collisions.intersects(ballRect, brick)):
                 brick.broken = True
-                if ball.pos.x > brick.pos.x+brick.dim.x or ball.pos.x < brick.pos.x:
+
+                if ball.pos.x > brick.x + brick.width or ball.pos.x < brick.x:
                     ball.vel.y *= -1 + random.random()-.5
-                if ball.pos.y > brick.pos.y+brick.dim.y or ball.pos.y < brick.pos.y:
+                if ball.pos.y > brick.y + brick.height or ball.pos.y < brick.y:
                     ball.vel.x *= -1 + random.random()-.5
                     
             if ball.pos.y > paddle.pos.y - ball.radius and ball.pos.x > paddle.pos.x - ball.radius and ball.pos.x < paddle.pos.x + paddle.dim.x + ball.radius:

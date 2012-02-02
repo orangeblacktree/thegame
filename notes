@@ -3,6 +3,9 @@ Todo
 
 - Make keybound code run in its own thread
 
+- Levels for demo
+
+- Proper collisions in breakout
 
 Bugs
 ----

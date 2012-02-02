@@ -3,6 +3,8 @@ Todo
 
 - Make keybound code run in its own thread
 
+- Handle both key down and key up keybinds.
+
 
 Bugs
 ----

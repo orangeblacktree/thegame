@@ -12,12 +12,15 @@ import userspace
 import objects
 from vec2d import Vec2d
 
+from level import Level
+
 from brick import Brick, _Brick
 from paddle import Paddle, _Paddle
 from ball import Ball, _Ball
 
-class Main:
+class Main(Level):
     def __init__(self):
+        Level.__init__(self)
         self.name = "Breakout... With more colors!"
 
     def start(self):

@@ -2,6 +2,7 @@
 
 keybindings["left"] = "paddle.left()"
 keybindings["right"] = "paddle.right()"
+keybindings["down"] = "paddle.stop()"
 
 def move_to_x(x):
     # keep moving paddle to (paddle.y, x) until ball gets low

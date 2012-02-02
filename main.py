@@ -21,6 +21,7 @@ import objects
 
 background_color = (0,0,0) #black
 frame_rate = 40.0
+savedata_filename = os.path.join('userdata', 'savefile')
 
 shared.stop_game = False
 
@@ -61,13 +62,24 @@ def init():
     # set window titles
     shared.gtkwin.show()
     shared.gtkwin.set_title("thegame - code editor")
-    pygame.display.set_caption("thegame - world", "thegame")
+    pygame.display.set_caption("thegame", "thegame")
 
     # set keybindings
     userspace.reset_keybindings()
 
-    # start the game!
+    # load levels and restore saved level data (if exists)
     shared.levelmgr = levelmanager.LevelManager()
+
+    if not os.path.exists('userdata'):
+        os.makedirs('userdata')
+
+    try:
+        f = open(savedata_filename, 'r')
+        shared.levelmgr.load_level_data(f)
+    except IOError:
+        pass
+
+    # start the game!
     shared.levelmgr.start()
 
 def handle_events():
@@ -127,15 +139,20 @@ def loop():
         clock.tick(frame_rate)
 
 def end():
-    objects.destroy_all()
+    # stop the game and save level data
+    shared.levelmgr.stop()
 
+    f = open(savedata_filename, 'w')
+    shared.levelmgr.save_level_data(f)
+
+    # stop the gui
     shared.gui.quit()
-
     gtk.threads_enter()
     gtk.main_quit()
     gtk.threads_leave()
     gtk_thread.join()
 
+    # stop pygame
     pygame.quit()
 
 # play the game!

@@ -5,19 +5,25 @@
 # ------------------------------------------------------------------
 
 import pygame
+import os
 
 import shared
 import objects
+import image
 import text
 from vec2d import Vec2d
+from level import Level
 
-buttons_top = 20
-buttons_left = 20
+logo_top = 5
+title_top = logo_top + 300
+title_height = 0 #64
 
+buttons_topgap = 20
+buttons_left = 40
 button_height = 48
 button_gap = 10
 
-done_color = (0, 0, 255) #finished level
+done_color = (0, 170, 0) #finished level
 new_color = (170, 170, 170) #not finished, not locked
 locked_color = (90, 90, 90) #locked level
 highlight = 1.5
@@ -31,9 +37,9 @@ class _LevelButton:
         self.enabled = shared.levelmgr.unlocked(level)
 
         # set color based on level deps/completion
-        if self.enabled:
+        if not self.enabled:
             self.color = locked_color
-        elif level.completed:
+        elif level.data.completed:
             self.color = done_color
         else:
             self.color = new_color
@@ -54,7 +60,7 @@ class _LevelButton:
     def select(self):
         # brighten the text image
         if self.enabled:
-            newcol = map(lambda x: x * highlight, self.color)
+            newcol = map(lambda x: min(x * highlight, 255), self.color)
             self.text = button_font.render(self.level.name, 1, newcol)
 
     def deselect(self):
@@ -67,8 +73,9 @@ class _LevelButton:
             shared.levelmgr.request_goto_level(self.level.ind)
         
         
-class Main:
+class Main(Level):
     def __init__(self):
+        Level.__init__(self)
         self.ind = 0
         self.next_level = 0
         self.deps = []
@@ -78,11 +85,16 @@ class Main:
         button_font = pygame.font.Font(None, button_height)
 
     def start(self):
+        # make logo
+        logo = objects.create(image.Image, os.path.join('gamedata', 'images', 'logo.png'))
+        logo_left = (shared.dim.x - logo.image.get_width()) // 2
+        logo.set_position(Vec2d(logo_left, logo_top))
+
         # make title text
-        title = text._Text()
-        title.update(text = self.name, size = button_height, color = (200, 128, 25))
-        text_left = buttons_left #(shared.dim - title.img.get_width()) // 2
-        title.update(pos = (text_left, buttons_top))
+        #title = objects.create(text.Text, self.name, Vec2d(0, 0), 
+        #        title_height, None, (200, 128, 25))
+        #title_left = (shared.dim.x - title.image.get_width()) // 2
+        #title.set_properties(position = Vec2d(title_left, title_top))
 
         # make buttons
         levels = shared.levelmgr.levels
@@ -90,7 +102,8 @@ class Main:
         for i, ind in enumerate(sorted(levels.iterkeys())):
             if ind == self.ind:
                 continue # skip self
-            pos = Vec2d(buttons_left, buttons_top + i * (button_height + button_gap))
+            pos = Vec2d(buttons_left, title_top + title_height + buttons_topgap # gap for title
+                    + (i - 1) * (button_height + button_gap)) # offset for i'th button
             self.buttons.append(objects.create(_LevelButton, pos, levels[ind]))
 
         # select first
@@ -111,14 +124,14 @@ class Main:
 
     def select_next(self):
         # if higher ok, deselect current and select it
-        new = self.select + 1
+        new = self.selected + 1
         if new < len(self.buttons) and self.buttons[new].enabled:
             self.buttons[self.selected].deselect()
             self.selected = new
             self.buttons[self.selected].select()
     def select_prev(self):
         # if lower ok, deselect current and select it
-        new = self.select - 1
+        new = self.selected - 1
         if new >= 0 and self.buttons[new].enabled:
             self.buttons[self.selected].deselect()
             self.selected = new

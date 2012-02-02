@@ -5,8 +5,13 @@
 # ------------------------------------------------------------------
 
 import importlib
-import levels
-import levels.levelselect
+import pickle
+import os
+
+import gamedata.levels
+import gamedata.levels.levelselect
+
+levels_list_filename = os.path.join('gamedata', 'levels', 'list')
 
 class LevelManager:
     def __init__(self):
@@ -15,10 +20,10 @@ class LevelManager:
         self.requested_level = -1
 
         # add level select menu
-        self.levels[0] = levels.levelselect.Main()
+        self.levels[0] = gamedata.levels.levelselect.Main()
 
         # add the levels
-        self.parse_level_list("levels/list")
+        self.parse_level_list(levels_list_filename)
 
     # add each level from file at 'path'
     def parse_level_list(self, path):
@@ -43,7 +48,7 @@ class LevelManager:
 
     # add level in module 'modulename'
     def add_level(self, ind, nextind, modulename, deps):
-        mod = importlib.import_module('levels.' + modulename, levels)
+        mod = importlib.import_module('gamedata.levels.' + modulename, gamedata.levels)
 
         level = mod.Main()
         level.ind = ind
@@ -109,9 +114,24 @@ class LevelManager:
 
     # whether a level is playable
     def unlocked(self, level):
+        if level.ind == 0:
+            return True # level select menu is always unlocked
         for depind in level.deps:
             dep = self.levels[depind]
-            if not (hasattr(dep, 'completed') and dep.completed):
+            if not dep.data.completed:
                 return False
         return True
+
+    # save level data for all levels to file
+    def save_level_data(self, f):
+        all_data = {}
+        for ind, level in self.levels.iteritems():
+            all_data[ind] = level.data
+        pickle.dump(all_data, f)
+
+    # load level data from file
+    def load_level_data(self, f):
+        all_data = pickle.load(f)
+        for ind, data in all_data.iteritems():
+            self.levels[ind].data = data
 

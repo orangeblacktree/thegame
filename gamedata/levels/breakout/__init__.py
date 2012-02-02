@@ -23,7 +23,6 @@ class Main(Level):
     def __init__(self):
         Level.__init__(self)
         self.name = "Breakout"
-        self.completed = True
 
     def start(self):
         random.seed()
@@ -47,7 +46,9 @@ class Main(Level):
         objects.destroy_all()
         
     def event(self, event):
-        pass
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_c:
+                self.data.completed = True
 
     def step(self, elapsed):
         # collide

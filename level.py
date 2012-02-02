@@ -1,3 +1,9 @@
+# ------------------------------------------------------------------
+# level.py
+# 
+# Base class for level 'Main' classes
+# ------------------------------------------------------------------
+
 class Level:
     def __init__(self):
         self.completed = False

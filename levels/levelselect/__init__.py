@@ -17,7 +17,7 @@ buttons_left = 20
 button_height = 48
 button_gap = 10
 
-done_color = (0, 0, 255) #finished level
+done_color = (0, 170, 0) #finished level
 new_color = (170, 170, 170) #not finished, not locked
 locked_color = (90, 90, 90) #locked level
 highlight = 1.5
@@ -31,7 +31,7 @@ class _LevelButton:
         self.enabled = shared.levelmgr.unlocked(level)
 
         # set color based on level deps/completion
-        if self.enabled:
+        if not self.enabled:
             self.color = locked_color
         elif level.completed:
             self.color = done_color
@@ -54,7 +54,7 @@ class _LevelButton:
     def select(self):
         # brighten the text image
         if self.enabled:
-            newcol = map(lambda x: x * highlight, self.color)
+            newcol = map(lambda x: min(x * highlight, 255), self.color)
             self.text = button_font.render(self.level.name, 1, newcol)
 
     def deselect(self):
@@ -111,14 +111,14 @@ class Main:
 
     def select_next(self):
         # if higher ok, deselect current and select it
-        new = self.select + 1
+        new = self.selected + 1
         if new < len(self.buttons) and self.buttons[new].enabled:
             self.buttons[self.selected].deselect()
             self.selected = new
             self.buttons[self.selected].select()
     def select_prev(self):
         # if lower ok, deselect current and select it
-        new = self.select - 1
+        new = self.selected - 1
         if new >= 0 and self.buttons[new].enabled:
             self.buttons[self.selected].deselect()
             self.selected = new

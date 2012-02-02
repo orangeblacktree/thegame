@@ -22,7 +22,6 @@ class Main(Level):
     def __init__(self):
         Level.__init__(self)
         self.name = "Breakout"
-        self.completed = True
 
     def start(self):
         random.seed()
@@ -46,6 +45,7 @@ class Main(Level):
         objects.destroy_all()
         
     def event(self, event):
+        if event.type == 
         pass
 
     def step(self, elapsed):

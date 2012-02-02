@@ -1,7 +1,7 @@
 # run this in-game
 while True:
     if paddle.getPos().x > ball.getPos().x:
-        paddle.move('left')
+        paddle.left()
     else:
-        paddle.move('right')
-    wait(1)
+        paddle.right()
+    wait(.05)

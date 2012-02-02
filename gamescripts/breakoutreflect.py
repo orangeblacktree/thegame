@@ -8,9 +8,9 @@ def move_to_x(x):
     # keep moving paddle to (paddle.y, x) until ball gets low
     while ball.getPos().y < window_dim.y - 40:
         if paddle.getPos().x + 20 > x:
-            paddle.move('left')
+            paddle.left()
         else:
-            paddle.move('right')
+            paddle.right()
         wait(0.1)
 
 def collision_x(pos, vel):
@@ -32,7 +32,7 @@ while True:
     while posref.y < 40 or window_dim.y - posref.y < 40 or posref.x < 40 or window_dim.x - posref.x < 40:
         wait(0.2)
         
-    # get some sample data    
+    # get some sample data
     delta_t = 0.2
     ballpos0 = Vec2d(posref)
     wait(delta_t)

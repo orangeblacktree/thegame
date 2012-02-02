@@ -54,10 +54,13 @@ class Main(Level):
         ball = self.ball
         paddle = self.paddle
         
+        brickLeft = False
+
         for loc in self._bricks:
             brick = self._bricks[loc]
             if brick.broken:
                 continue
+            brickLeft = True
                 
             if ((ball.pos.y > brick.pos.y - ball.radius and ball.pos.y <  brick.pos.y + brick.dim.y + ball.radius) and
                (ball.pos.x > brick.pos.x - ball.radius and ball.pos.x <  brick.pos.x + brick.dim.x + ball.radius)):
@@ -69,4 +72,9 @@ class Main(Level):
                     
             if ball.pos.y > paddle.pos.y - ball.radius and ball.pos.x > paddle.pos.x - ball.radius and ball.pos.x < paddle.pos.x + paddle.dim.x + ball.radius:
                 ball.vel.y = -abs(ball.vel.y)
+        #Win condition
+        if brickLeft == False:
+            self.data.completed = True
+            shared.levelmgr.request_next_level()
+            
         

@@ -61,7 +61,7 @@ def init():
     # set window titles
     shared.gtkwin.show()
     shared.gtkwin.set_title("thegame - code editor")
-    pygame.display.set_caption("thegame - world", "thegame")
+    pygame.display.set_caption("thegame", "thegame")
 
     # set keybindings
     userspace.reset_keybindings()

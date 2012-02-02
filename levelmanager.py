@@ -6,6 +6,7 @@
 
 import importlib
 import levels
+import levels.levelselect
 
 class LevelManager:
     def __init__(self):
@@ -13,8 +14,13 @@ class LevelManager:
         self.current_level = -1
         self.requested_level = -1
 
+        # add level select menu
+        self.levels[0] = levels.levelselect.Main()
+
+        # add the levels
         self.parse_level_list("levels/list")
 
+    # add each level from file at 'path'
     def parse_level_list(self, path):
         f = open(path, 'r')
         for line in f:
@@ -35,10 +41,12 @@ class LevelManager:
 
             self.add_level(ind, nextind, modulename, deps)
 
+    # add level in module 'modulename'
     def add_level(self, ind, nextind, modulename, deps):
         mod = importlib.import_module('levels.' + modulename, levels)
 
         level = mod.Main()
+        level.ind = ind
         level.next_level = nextind
         level.deps = deps
 
@@ -82,6 +90,11 @@ class LevelManager:
     def step(self, elapsed):
         if self.current_level >= 0:
             self.levels[self.current_level].step(elapsed)
+
+    # notify current level of a pygame event
+    def event(self, event):
+        if self.current_level >= 0:
+            self.levels[self.current_level].event(event)
 
     # handle level switch requests
     def handle_requests(self):

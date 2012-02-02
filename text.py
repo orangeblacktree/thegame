@@ -1,15 +1,14 @@
+# ------------------------------------------------------------------
+# text.py
+# 
+# A static text object
+# ------------------------------------------------------------------
+
 import pygame
 import shared
 import objects
 
-class Text:
-    def select(self):
-        pass
-    
-    
 class _Text:
-    proxy_type = Text
-
     def __init__(self):
         self.text = ""
         self.pos = (0,0)
@@ -22,21 +21,6 @@ class _Text:
     def render(self):
         self.img = self.font.render(self.text, 1, self.color)
 
-    def setText(self, text):
-        self.text = text
-        
-    def setPos(self, pos):
-        self.pos = pos
-       
-    def setSize(self, size):
-        self.size = size
-        pygame.font.Font(self.fontType, size)
-
-    def setFont(self, font):
-        self.fontType = font
-        pygame.font.Font(self.fontType, size)
-
-       
     def update(self, text=None, pos=None, size=None,  fontType=None, color=None):
         if text is not None:
             self.text = text
@@ -59,9 +43,7 @@ class _Text:
         pass
         
     def draw(self):
-        if pygame.font:
-            shared.canvas.blit(self.img, self.pos)
-        
+        shared.canvas.blit(self.img, self.pos)
         
     def select(self):
         pass

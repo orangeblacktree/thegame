@@ -75,6 +75,9 @@ def handle_events():
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             return False
+
+        shared.levelmgr.event(event)
+
         if event.type == pygame.KEYDOWN:
             # some temporary key binds
             if event.key == pygame.K_ESCAPE:

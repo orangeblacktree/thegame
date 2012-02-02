@@ -1,7 +1,7 @@
 # ------------------------------------------------------------------
-# breakout/__init__.py
+# breakoutrainbow/__init__.py
 # 
-# Breakout Level!
+# (Colourful) Breakout level!
 # ------------------------------------------------------------------
 
 import pygame
@@ -18,7 +18,7 @@ from ball import Ball, _Ball
 
 class Main:
     def __init__(self):
-        self.name = "Breakout"
+        self.name = "Breakout... With more colors!"
 
     def start(self):
         random.seed()

@@ -37,6 +37,11 @@ class _Paddle:
         pass
 
     def step(self, elapsed):
+        if self.pos.x < 0 and self.dir == -1:
+            self.dir = 0
+        if self.pos.x > shared.dim.x - self.dim.x and self.dir == 1:
+            self.dir = 0
+        
         # ds = v dt
         self.pos += Vec2d(move_speed * self.dir * elapsed, 0)
 

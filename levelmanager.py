@@ -7,8 +7,10 @@
 import importlib
 import pickle
 
-import levels
-import levels.levelselect
+import gamedata.levels
+import gamedata.levels.levelselect
+
+levels_list_filename = 'gamedata/levels/list'
 
 class LevelManager:
     def __init__(self):
@@ -17,10 +19,10 @@ class LevelManager:
         self.requested_level = -1
 
         # add level select menu
-        self.levels[0] = levels.levelselect.Main()
+        self.levels[0] = gamedata.levels.levelselect.Main()
 
         # add the levels
-        self.parse_level_list("levels/list")
+        self.parse_level_list(levels_list_filename)
 
     # add each level from file at 'path'
     def parse_level_list(self, path):
@@ -45,7 +47,7 @@ class LevelManager:
 
     # add level in module 'modulename'
     def add_level(self, ind, nextind, modulename, deps):
-        mod = importlib.import_module('levels.' + modulename, levels)
+        mod = importlib.import_module('gamedata.levels.' + modulename, gamedata.levels)
 
         level = mod.Main()
         level.ind = ind

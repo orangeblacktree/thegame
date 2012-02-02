@@ -21,6 +21,7 @@ import objects
 
 background_color = (0,0,0) #black
 frame_rate = 40.0
+savedata_filename = 'gamedata/savefile'
 
 shared.stop_game = False
 
@@ -70,7 +71,7 @@ def init():
     shared.levelmgr = levelmanager.LevelManager()
 
     try:
-        f = open('savefile', 'r')
+        f = open(savedata_filename, 'r')
         shared.levelmgr.load_level_data(f)
     except IOError:
         pass
@@ -138,7 +139,7 @@ def end():
     # stop the game and save level data
     shared.levelmgr.stop()
 
-    f = open('savefile', 'w')
+    f = open(savedata_filename, 'w')
     shared.levelmgr.save_level_data(f)
 
     # stop the gui

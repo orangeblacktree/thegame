@@ -10,6 +10,7 @@ import shared
 import objects
 import text
 from vec2d import Vec2d
+from level import Level
 
 buttons_top = 20
 buttons_left = 20
@@ -33,7 +34,7 @@ class _LevelButton:
         # set color based on level deps/completion
         if not self.enabled:
             self.color = locked_color
-        elif level.completed:
+        elif level.data.completed:
             self.color = done_color
         else:
             self.color = new_color
@@ -67,8 +68,9 @@ class _LevelButton:
             shared.levelmgr.request_goto_level(self.level.ind)
         
         
-class Main:
+class Main(Level):
     def __init__(self):
+        Level.__init__(self)
         self.ind = 0
         self.next_level = 0
         self.deps = []

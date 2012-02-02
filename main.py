@@ -66,8 +66,16 @@ def init():
     # set keybindings
     userspace.reset_keybindings()
 
-    # start the game!
+    # load levels and restore saved level data (if exists)
     shared.levelmgr = levelmanager.LevelManager()
+
+    try:
+        f = open('savefile', 'r')
+        shared.levelmgr.load_level_data(f)
+    except IOError:
+        pass
+
+    # start the game!
     shared.levelmgr.start()
 
 def handle_events():
@@ -127,15 +135,20 @@ def loop():
         clock.tick(frame_rate)
 
 def end():
-    objects.destroy_all()
+    # stop the game and save level data
+    shared.levelmgr.stop()
 
+    f = open('savefile', 'w')
+    shared.levelmgr.save_level_data(f)
+
+    # stop the gui
     shared.gui.quit()
-
     gtk.threads_enter()
     gtk.main_quit()
     gtk.threads_leave()
     gtk_thread.join()
 
+    # stop pygame
     pygame.quit()
 
 # play the game!

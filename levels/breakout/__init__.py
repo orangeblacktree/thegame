@@ -45,8 +45,9 @@ class Main(Level):
         objects.destroy_all()
         
     def event(self, event):
-        if event.type == 
-        pass
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_c:
+                self.data.completed = True
 
     def step(self, elapsed):
         # collide

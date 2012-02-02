@@ -5,6 +5,8 @@
 # ------------------------------------------------------------------
 
 import importlib
+import pickle
+
 import levels
 import levels.levelselect
 
@@ -109,9 +111,24 @@ class LevelManager:
 
     # whether a level is playable
     def unlocked(self, level):
+        if level.ind == 0:
+            return True # level select menu is always unlocked
         for depind in level.deps:
             dep = self.levels[depind]
-            if not (hasattr(dep, 'completed') and dep.completed):
+            if not dep.data.completed:
                 return False
         return True
+
+    # save level data for all levels to file
+    def save_level_data(self, f):
+        all_data = {}
+        for ind, level in self.levels.iteritems():
+            all_data[ind] = level.data
+        pickle.dump(all_data, f)
+
+    # load level data from file
+    def load_level_data(self, f):
+        all_data = pickle.load(f)
+        for ind, data in all_data.iteritems():
+            self.levels[ind].data = data
 

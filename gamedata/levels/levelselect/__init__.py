@@ -20,8 +20,10 @@ title_height = 0 #64
 
 buttons_topgap = 20
 buttons_left = 40
-button_height = 48
+button_height = 40
 button_gap = 10
+buttons_bottom_gap = 5
+buttons_top = title_top + title_height + buttons_topgap
 
 done_color = (0, 170, 0) #finished level
 new_color = (170, 170, 170) #not finished, not locked
@@ -55,7 +57,8 @@ class _LevelButton:
         
     def draw(self):
         # draw the text image
-        shared.canvas.blit(self.text, self.pos)
+        if not (self.too_high() or self.too_low()):
+            shared.canvas.blit(self.text, self.pos)
 
     def select(self):
         # brighten the text image
@@ -71,7 +74,12 @@ class _LevelButton:
         # let's go!
         if self.enabled:
             shared.levelmgr.request_goto_level(self.level.ind)
-        
+
+    # bounds checking
+    def too_high(self):
+        return self.pos.y < buttons_top
+    def too_low(self):
+        return self.pos.y + button_height >= shared.dim.y - buttons_bottom_gap
         
 class Main(Level):
     def __init__(self):
@@ -85,11 +93,6 @@ class Main(Level):
         button_font = pygame.font.Font(None, button_height)
 
     def start(self):
-        # make logo
-        logo = objects.create(image.Image, os.path.join('gamedata', 'images', 'logo.png'))
-        logo_left = (shared.dim.x - logo.image.get_width()) // 2
-        logo.set_position(Vec2d(logo_left, logo_top))
-
         # make title text
         #title = objects.create(text.Text, self.name, Vec2d(0, 0), 
         #        title_height, None, (200, 128, 25))
@@ -102,9 +105,14 @@ class Main(Level):
         for i, ind in enumerate(sorted(levels.iterkeys())):
             if ind == self.ind:
                 continue # skip self
-            pos = Vec2d(buttons_left, title_top + title_height + buttons_topgap # gap for title
+            pos = Vec2d(buttons_left, buttons_top # gap for title
                     + (i - 1) * (button_height + button_gap)) # offset for i'th button
             self.buttons.append(objects.create(_LevelButton, pos, levels[ind]))
+
+        # make logo
+        logo = objects.create(image.Image, os.path.join('gamedata', 'images', 'logo.png'))
+        logo_left = (shared.dim.x - logo.image.get_width()) // 2
+        logo.set_position(Vec2d(logo_left, logo_top))
 
         # select first
         self.selected = 0
@@ -122,6 +130,16 @@ class Main(Level):
             elif event.key == pygame.K_RETURN:
                 self.click_selected()
 
+    def check_scroll(self):
+        selbutton = self.buttons[self.selected]
+        if selbutton.too_high():
+            self.move_buttons(Vec2d(0, button_height + button_gap))
+        elif selbutton.too_low():
+            self.move_buttons(Vec2d(0, -(button_height + button_gap)))
+    def move_buttons(self, vec):
+        for b in self.buttons:
+            b.pos += vec
+
     def select_next(self):
         # if higher ok, deselect current and select it
         new = self.selected + 1
@@ -129,6 +147,7 @@ class Main(Level):
             self.buttons[self.selected].deselect()
             self.selected = new
             self.buttons[self.selected].select()
+            self.check_scroll()
     def select_prev(self):
         # if lower ok, deselect current and select it
         new = self.selected - 1
@@ -136,6 +155,7 @@ class Main(Level):
             self.buttons[self.selected].deselect()
             self.selected = new
             self.buttons[self.selected].select()
+            self.check_scroll()
     def click_selected(self):
         self.buttons[self.selected].click()
 

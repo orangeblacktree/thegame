@@ -70,5 +70,8 @@ class Main(Level):
                     ball.vel.x *= -1 + random.random()-.5
                     
             if ball.pos.y > paddle.pos.y - ball.radius and ball.pos.x > paddle.pos.x - ball.radius and ball.pos.x < paddle.pos.x + paddle.dim.x + ball.radius:
-                ball.vel.y = -abs(ball.vel.y)
+                ball.vel.y = -abs(ball.vel.y) - 4
+                ball.pos.y = paddle.pos.y - ball.radius
+                
+        ball.vel.y+=1.9
         

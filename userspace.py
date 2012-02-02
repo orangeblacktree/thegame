@@ -8,6 +8,7 @@ import time
 import vec2d
 import pygame
 import keymap
+import threading
 
 # a 'wait()' function for user code - sleep in blocks to allow
 # cancelling
@@ -31,19 +32,20 @@ space = dict(
         wait = wait,
         )
 
-# run code in user space
 def run(code):
     exec(code, space, space)
 
 # reset keybindings to defaults
 def reset_keybindings():
-    pass
+    space['keybindings'] = {}
 
 # run action associated with a keybinding
 def do_key(keycode):
     if 'keybindings' not in space or type(space['keybindings']) is not dict:
-        resetKeybindings()
+        reset_keybindings()
 
     code = space['keybindings'].get(keymap.key_to_str[keycode])
     if code:
-        run(code)
+        from gui import Runner
+        runner = Runner("keypress", code)
+        runner.start()

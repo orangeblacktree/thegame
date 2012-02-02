@@ -37,20 +37,7 @@ def run(code):
 
 # reset keybindings to defaults
 def reset_keybindings():
-    space['keybindings'] = {
-        'left': "player.walk('left')",
-        'right': "player.walk('right')",
-        'up': "player.walk('up')",
-        'down': "player.walk('down')",
-    }
-    space['keybindings'] = {
-        pygame.K_LEFT: "paddle.move('left')",
-        pygame.K_RIGHT: "paddle.move('right')",
-    }
-    space['keybindings'] = {
-        pygame.K_LEFT: "paddle.move('left')",
-        pygame.K_RIGHT: "paddle.move('right')",
-    }
+    pass
 
 # run action associated with a keybinding
 def do_key(keycode):

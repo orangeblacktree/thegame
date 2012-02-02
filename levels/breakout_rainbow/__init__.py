@@ -1,7 +1,7 @@
 # ------------------------------------------------------------------
-# breakout/__init__.py
+# breakout_rainbow/__init__.py
 # 
-# Breakout Level!
+# (Colourful) Breakout level!
 # ------------------------------------------------------------------
 
 import pygame

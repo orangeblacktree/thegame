@@ -55,10 +55,13 @@ class Main(Level):
         ball = self.ball
         paddle = self.paddle
         
+        brickLeft = False
+
         for loc in self._bricks:
             brick = self._bricks[loc]
             if brick.broken:
                 continue
+            brickLeft = True
                 
             ballRect = pygame.Rect(ball.pos.x - ball.radius, ball.pos.y - ball.radius, 2*ball.radius, 2*ball.radius)
             if (collisions.intersects(ballRect, brick)):
@@ -70,8 +73,14 @@ class Main(Level):
                     ball.vel.x *= -1 + random.random()-.5
                     
             if ball.pos.y > paddle.pos.y - ball.radius and ball.pos.x > paddle.pos.x - ball.radius and ball.pos.x < paddle.pos.x + paddle.dim.x + ball.radius:
+
                 ball.vel.y = -abs(ball.vel.y) - 4
                 ball.pos.y = paddle.pos.y - ball.radius
                 
         ball.vel.y+=1.9
+
+        #Win condition
+        if brickLeft == False:
+            self.data.completed = True
+            shared.levelmgr.request_next_level()
         

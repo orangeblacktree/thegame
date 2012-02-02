@@ -12,9 +12,11 @@ import text
 from vec2d import Vec2d
 from level import Level
 
-buttons_top = 20
-buttons_left = 20
+title_top = 40
+title_height = 64
 
+buttons_topgap = 20
+buttons_left = 40
 button_height = 48
 button_gap = 10
 
@@ -81,10 +83,10 @@ class Main(Level):
 
     def start(self):
         # make title text
-        title = text._Text()
-        title.update(text = self.name, size = button_height, color = (200, 128, 25))
-        text_left = buttons_left #(shared.dim - title.img.get_width()) // 2
-        title.update(pos = (text_left, buttons_top))
+        title = objects.create(text.Text, self.name, Vec2d(buttons_left, title_top), 
+                title_height, None, (200, 128, 25))
+        title_left = (shared.dim.x - title.image.get_width()) // 2
+        title.set_properties(position = Vec2d(title_left, title_top))
 
         # make buttons
         levels = shared.levelmgr.levels
@@ -92,7 +94,8 @@ class Main(Level):
         for i, ind in enumerate(sorted(levels.iterkeys())):
             if ind == self.ind:
                 continue # skip self
-            pos = Vec2d(buttons_left, buttons_top + i * (button_height + button_gap))
+            pos = Vec2d(buttons_left, title_top + title_height + buttons_topgap # gap for title
+                    + (i - 1) * (button_height + button_gap)) # offset for i'th button
             self.buttons.append(objects.create(_LevelButton, pos, levels[ind]))
 
         # select first

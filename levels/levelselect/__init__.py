@@ -28,9 +28,15 @@ class _LevelButton:
     def __init__(self, pos, level):
         self.pos = pos
         self.level = level
+        self.enabled = shared.levelmgr.unlocked(level)
 
-        # TODO: set color based on level deps/completion
-        self.color = new_color
+        # set color based on level deps/completion
+        if self.enabled:
+            self.color = locked_color
+        elif level.completed:
+            self.color = done_color
+        else:
+            self.color = new_color
 
         # make the initial text image
         self.text = button_font.render(level.name, 1, self.color) 
@@ -47,8 +53,9 @@ class _LevelButton:
 
     def select(self):
         # brighten the text image
-        newcol = map(lambda x: x * highlight, self.color)
-        self.text = button_font.render(self.level.name, 1, newcol)
+        if self.enabled:
+            newcol = map(lambda x: x * highlight, self.color)
+            self.text = button_font.render(self.level.name, 1, newcol)
 
     def deselect(self):
         # back to normal
@@ -56,8 +63,8 @@ class _LevelButton:
 
     def click(self):
         # let's go!
-        # TODO: check deps
-        shared.levelmgr.request_goto_level(self.level.ind)
+        if self.enabled:
+            shared.levelmgr.request_goto_level(self.level.ind)
         
         
 class Main:
@@ -103,16 +110,18 @@ class Main:
                 self.click_selected()
 
     def select_next(self):
-        # if higher exists, deselect current and select it
-        if self.selected + 1 < len(self.buttons):
+        # if higher ok, deselect current and select it
+        new = self.select + 1
+        if new < len(self.buttons) and self.buttons[new].enabled:
             self.buttons[self.selected].deselect()
-            self.selected += 1
+            self.selected = new
             self.buttons[self.selected].select()
     def select_prev(self):
-        # if lower exists, deselect current and select it
-        if self.selected - 1 >= 0:
+        # if lower ok, deselect current and select it
+        new = self.select - 1
+        if new >= 0 and self.buttons[new].enabled:
             self.buttons[self.selected].deselect()
-            self.selected -= 1
+            self.selected = new
             self.buttons[self.selected].select()
     def click_selected(self):
         self.buttons[self.selected].click()
@@ -120,3 +129,4 @@ class Main:
     def stop(self):
         objects.destroy_all()
         self.buttons = []
+

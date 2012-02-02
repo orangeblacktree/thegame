@@ -19,6 +19,7 @@ from ball import Ball, _Ball
 class Main:
     def __init__(self):
         self.name = "Breakout"
+        self.completed = True
 
     def start(self):
         random.seed()

@@ -63,11 +63,16 @@ class LevelManager:
             self.levels[self.current_level].stop()
         self.current_level = -1
 
-    # jump to a given level
+    # jump to a given level if it's unlocked, else go to 0
     def goto_level(self, ind):
+        if self.unlocked(self.levels[ind]):
+            self.current_level = ind
+        elif self.current_level != 0:
+            self.current_level = 0
+        else:
+            return #target locked and we're already at 0
         if self.current_level >= 0:
             self.levels[self.current_level].stop()
-        self.current_level = ind
         self.levels[self.current_level].start()
     def request_goto_level(self, ind):
         self.requested_level = ind
@@ -101,3 +106,12 @@ class LevelManager:
         if self.requested_level >= 0:
             self.goto_level(self.requested_level)
             self.requested_level = -1
+
+    # whether a level is playable
+    def unlocked(self, level):
+        for depind in level.deps:
+            dep = self.levels[depind]
+            if not (hasattr(dep, 'completed') and dep.completed):
+                return False
+        return True
+

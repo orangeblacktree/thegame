@@ -21,7 +21,7 @@ import objects
 
 background_color = (0,0,0) #black
 frame_rate = 40.0
-savedata_filename = 'gamedata/savefile'
+savedata_filename = 'userdata/savefile'
 
 shared.stop_game = False
 
@@ -69,6 +69,9 @@ def init():
 
     # load levels and restore saved level data (if exists)
     shared.levelmgr = levelmanager.LevelManager()
+
+    if not os.path.exists('userdata'):
+        os.makedirs('userdata')
 
     try:
         f = open(savedata_filename, 'r')

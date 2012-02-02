@@ -20,6 +20,7 @@ from ball import Ball, _Ball
 
 class Main(Level):
     def __init__(self):
+        Level.__init__(self)
         self.name = "Breakout... With more colors!"
 
     def start(self):

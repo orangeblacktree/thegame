@@ -6,11 +6,12 @@
 
 import importlib
 import pickle
+import os
 
 import gamedata.levels
 import gamedata.levels.levelselect
 
-levels_list_filename = 'gamedata/levels/list'
+levels_list_filename = os.path.join('gamedata', 'levels', 'list')
 
 class LevelManager:
     def __init__(self):

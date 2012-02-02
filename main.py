@@ -21,7 +21,7 @@ import objects
 
 background_color = (0,0,0) #black
 frame_rate = 40.0
-savedata_filename = 'userdata/savefile'
+savedata_filename = os.path.join('userdata', 'savefile')
 
 shared.stop_game = False
 

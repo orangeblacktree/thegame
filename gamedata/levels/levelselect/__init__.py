@@ -5,15 +5,18 @@
 # ------------------------------------------------------------------
 
 import pygame
+import os
 
 import shared
 import objects
+import image
 import text
 from vec2d import Vec2d
 from level import Level
 
-title_top = 40
-title_height = 64
+logo_top = 5
+title_top = logo_top + 300
+title_height = 0 #64
 
 buttons_topgap = 20
 buttons_left = 40
@@ -82,11 +85,16 @@ class Main(Level):
         button_font = pygame.font.Font(None, button_height)
 
     def start(self):
+        # make logo
+        logo = objects.create(image.Image, os.path.join('gamedata', 'images', 'logo.png'))
+        logo_left = (shared.dim.x - logo.image.get_width()) // 2
+        logo.set_position(Vec2d(logo_left, logo_top))
+
         # make title text
-        title = objects.create(text.Text, self.name, Vec2d(buttons_left, title_top), 
-                title_height, None, (200, 128, 25))
-        title_left = (shared.dim.x - title.image.get_width()) // 2
-        title.set_properties(position = Vec2d(title_left, title_top))
+        #title = objects.create(text.Text, self.name, Vec2d(0, 0), 
+        #        title_height, None, (200, 128, 25))
+        #title_left = (shared.dim.x - title.image.get_width()) // 2
+        #title.set_properties(position = Vec2d(title_left, title_top))
 
         # make buttons
         levels = shared.levelmgr.levels

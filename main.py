@@ -64,22 +64,27 @@ def init():
     pygame.display.set_caption("thegame - world", "thegame")
 
     # set keybindings
-    userspace.resetKeybindings()
+    userspace.reset_keybindings()
 
     # start the game!
     shared.levelmgr = levelmanager.LevelManager()
-    #shared.levelmgr.start()
+    shared.levelmgr.start()
 
-def handleEvents():
+def handle_events():
     # pygame events
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             return False
         if event.type == pygame.KEYDOWN:
+            # some temporary key binds
             if event.key == pygame.K_ESCAPE:
                 return False
+            elif event.key == pygame.K_F1:
+                shared.levelmgr.request_goto_level(0)
+            elif event.key == pygame.K_F2:
+                shared.levelmgr.request_next_level()
 
-            userspace.doKey(event.key)
+            userspace.do_key(event.key)
 
     return True
 
@@ -94,17 +99,21 @@ def loop():
 
     # game loop
     while not shared.stop_game:
+        elapsed = 1 / frame_rate
+
         # events
-        if not handleEvents():
+        if not handle_events():
             break
 
         # action!
         # TODO: fix elapsed time handling!
-        elapsed = 1 / frame_rate
+        shared.levelmgr.step(elapsed)
         map(lambda o: o.step(elapsed), objects.world)
         shared.gui.step(elapsed)
 
-        objects.handleRequests()
+        # handle requests
+        objects.handle_requests()
+        shared.levelmgr.handle_requests()
         
         # draw pretty things
         shared.canvas.fill(background_color)

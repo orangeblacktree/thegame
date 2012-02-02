@@ -4,14 +4,12 @@ import shared
 import objects
 from vec2d import Vec2d
 
-import random
-
 # the user's interface to the Ball
 class Ball:
     def getPos(self):
-        return objects.proxy_map[self].getPos()
+        return Vec2d(objects.proxy_map[self].getPos())
         
-# the internal Ball class
+# the internal Ball object
 class _Ball:
     proxy_type = Ball
     

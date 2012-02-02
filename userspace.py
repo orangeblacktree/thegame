@@ -36,7 +36,7 @@ def run(code):
     exec(code, space, space)
 
 # reset keybindings to defaults
-def resetKeybindings():
+def reset_keybindings():
     space['keybindings'] = {
         'left': "player.walk('left')",
         'right': "player.walk('right')",
@@ -53,7 +53,7 @@ def resetKeybindings():
     }
 
 # run action associated with a keybinding
-def doKey(keycode):
+def do_key(keycode):
     if 'keybindings' not in space or type(space['keybindings']) is not dict:
         resetKeybindings()
 

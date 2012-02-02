@@ -20,10 +20,11 @@ def create(cons, *args):
 
     return obj
 
-def handleRequests():
-    map(destroy, destroy_requests)
+def handle_requests():
+    while destroy_requests:
+        destroy(destroy_requests.pop())
     
-def requestDestroy(obj):
+def request_destroy(obj):
     destroy_requests.append(obj)
     
 def destroy(obj):
@@ -33,5 +34,10 @@ def destroy(obj):
     world.remove(obj)
 
 def destroy_all():
-    map(destroy, world)
+    global world
+    for obj in world:
+        if hasattr(obj, 'proxy'):
+            del proxy_map[obj.proxy]
+        obj.destroy()
+    world = []
 

@@ -4,10 +4,12 @@ import shared
 import objects
 from vec2d import Vec2d
 
+# the user's interface to the Brick
 class Brick:
     def getPos(self):
-        return objects.proxy_map[self].getPos()
+        return Vec2d(objects.proxy_map[self].getPos())
         
+# the internal Brick object
 class _Brick:
     proxy_type = Brick
     

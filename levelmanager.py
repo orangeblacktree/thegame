@@ -4,9 +4,12 @@
 # Manage reading list of levels and switching between them
 # ------------------------------------------------------------------
 
+import importlib
+import levels
+
 class LevelManager:
     def __init__(self):
-        self.levels = []
+        self.levels = {}
         self.current_level = -1
         self.requested_level = -1
 
@@ -33,7 +36,13 @@ class LevelManager:
             self.add_level(ind, nextind, modulename, deps)
 
     def add_level(self, ind, nextind, modulename, deps):
-        pass
+        mod = importlib.import_module('levels.' + modulename, levels)
+
+        level = mod.Main()
+        level.next_level = nextind
+        level.deps = deps
+
+        self.levels[ind] = level
 
     # start the game
     def start(self):
@@ -57,13 +66,13 @@ class LevelManager:
 
     # go to the next level
     def next_level(self):
-        if current_level < 0:
+        if self.current_level < 0:
             self.goto_level(0)
         else:
             nxt = self.levels[self.current_level].next_level
             self.goto_level(nxt)
     def request_next_level(self):
-        if current_level < 0:
+        if self.current_level < 0:
             self.request_goto_level(0)
         else:
             nxt = self.levels[self.current_level].next_level
@@ -72,7 +81,7 @@ class LevelManager:
     # notify current level of step event
     def step(self, elapsed):
         if self.current_level >= 0:
-            self.levels[self.current_level].step(self, elapsed)
+            self.levels[self.current_level].step(elapsed)
 
     # handle level switch requests
     def handle_requests(self):

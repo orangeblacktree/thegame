@@ -15,15 +15,15 @@ from vec2d import Vec2d
 from level import Level
 
 logo_top = 5
-title_top = logo_top + 300
-title_height = 0 #64
+title_topgap = 5
+title_height = 0 #no title now
 
 buttons_topgap = 20
 buttons_left = 40
 button_height = 40
 button_gap = 10
 buttons_bottom_gap = 5
-buttons_top = title_top + title_height + buttons_topgap
+buttons_top = 0 #will set later
 
 done_color = (0, 170, 0) #finished level
 new_color = (170, 170, 170) #not finished, not locked
@@ -104,16 +104,27 @@ class Main(Level):
         self.next_level = 0
         self.deps = []
         self.name = "Level Select Menu"
+        self.selected = 0
 
         global button_font
         button_font = pygame.font.Font(None, button_height)
 
     def start(self):
+        # make logo
+        logo = objects.create(image.Image, os.path.join('gamedata', 'images', 'logo.png'))
+        logo_left = (shared.dim.x - logo.image.get_width()) // 2
+        logo.set_position(Vec2d(logo_left, logo_top))
+
+        logo_height = logo.image.get_height()
+        global buttons_top
+        buttons_top = logo_top + logo_height + title_topgap + title_height
+
         # make title text
         #title = objects.create(text.Text, self.name, Vec2d(0, 0), 
         #        title_height, None, (200, 128, 25))
         #title_left = (shared.dim.x - title.image.get_width()) // 2
-        #title.set_properties(position = Vec2d(title_left, title_top))
+        #title.set_properties(position = Vec2d(title_left, 
+        #        logo_top + logo_height + title_topgap))
 
         # make buttons
         levels = shared.levelmgr.levels
@@ -125,13 +136,7 @@ class Main(Level):
                     + (i - 1) * (button_height + button_gap)) # offset for i'th button
             self.buttons.append(objects.create(_LevelButton, pos, levels[ind]))
 
-        # make logo
-        logo = objects.create(image.Image, os.path.join('gamedata', 'images', 'logo.png'))
-        logo_left = (shared.dim.x - logo.image.get_width()) // 2
-        logo.set_position(Vec2d(logo_left, logo_top))
-
-        # select first
-        self.selected = 0
+        # select last selected
         self.buttons[self.selected].select()
         self.check_scroll()
 

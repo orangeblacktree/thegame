@@ -41,7 +41,7 @@ def init():
             gtkscreen.get_height())
 
     pygame_pos = dim * 0.01
-    pygame_dim = dim * (0.65, 0.75)
+    pygame_dim = Vec2d(800, 600)
     gtk_pos = dim * (0.55, 0.4)
     gtk_dim = dim * (0.44, 0.55)
 

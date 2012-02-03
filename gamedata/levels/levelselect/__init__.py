@@ -36,6 +36,15 @@ selrect_thickness = 2
 
 button_font = None 
 
+help_text = """
+# 
+# Welcome to thegame!
+# 
+# Select a level. If you're new to thegame, you might want to start with
+# 'Basics'. Have fun!
+# 
+"""
+
 class _LevelButton:
     def __init__(self, pos, level):
         self.pos = pos
@@ -139,6 +148,9 @@ class Main(Level):
         # select last selected
         self.buttons[self.selected].select()
         self.check_scroll()
+
+        # set help
+        shared.gui.help_page.set_text(help_text)
 
     def step(self, elapsed):
         pass

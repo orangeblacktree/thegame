@@ -165,6 +165,7 @@ class Page:
     def __init__(self, gui, filename, path = None):
         self.gui = gui
         self.path = path
+        self.is_help = False
 
         # text edit box inside a scrolled window
         self.buf = gtksourceview.Buffer()
@@ -196,6 +197,47 @@ class Page:
     def set_filename(self, filename):
         self.filename = filename
         self.gui.nb.set_tab_label_text(self.sw, filename)
+
+class HelpPage:
+    def __init__(self, gui):
+        self.gui = gui
+        self.is_help = True
+        self.divider_text = '\n\n# ----------------------------------------------------------------------------\n'
+
+        # text box inside a scrolled window
+        self.buf = gtksourceview.Buffer()
+        self.text = gtksourceview.View(self.buf)
+        self.sw = gtk.ScrolledWindow()
+        self.sw.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+        self.sw.set_shadow_type(gtk.SHADOW_IN)
+        self.sw.add(self.text)
+
+        self.buf.set_language(codelang)
+        self.text.set_show_line_numbers(True)
+        self.text.set_smart_home_end(True)
+        if codefont:
+            self.text.modify_font(codefont)
+
+        # can't edit help text
+        self.text.set_editable(False)
+
+        # initially attached
+        self.attach()
+
+    def attach(self):
+        # add self to notebook
+        self.gui.nb.append_page(self.sw, None)
+        self.gui.nb.set_tab_label_text(self.sw, "Help")
+        self.gui.window.show_all()
+
+    def set_text(self, text):
+        self.buf.set_text(text)
+    def append_text(self, text):
+        start, end = self.buf.get_bounds()
+        old_text = self.buf.get_text(start, end)
+        self.buf.set_text(old_text + self.divider_text + text)
+    def clear_text(self):
+        self.buf.set_text("")
 
 class Gui:
     def __init__(self):
@@ -252,8 +294,13 @@ class Gui:
                 gtk.EXPAND | gtk.FILL, 0,
                 0,                     0)
 
-        # first tab
+        # make help tab and a new code tab
+        self.help_page = HelpPage(self)
+        self.pages.append(self.help_page)
+
         self.new_page()
+
+        self.set_page(0) #focus help page
 
         # action!
         self.window.show_all()
@@ -305,7 +352,7 @@ class Gui:
         if not self.runner:
             ind = self.get_page()
 
-            if (ind >= 0):
+            if ind >= 0 and not self.pages[ind].is_help:
                 filename = self.pages[ind].filename
                 buf = self.pages[ind].buf
                 start, end = buf.get_bounds()
@@ -376,7 +423,7 @@ class Gui:
 
     def do_save(self):
         ind = self.get_page()
-        if ind < 0:
+        if ind < 0 or self.pages[ind].is_help:
             return
         page = self.pages[ind]
         if not page.path:
@@ -385,7 +432,7 @@ class Gui:
             self.save_file(page, page.path)
     def do_save_as(self):
         ind = self.get_page()
-        if ind < 0:
+        if ind < 0 or self.pages[ind].is_help:
             return
         page = self.pages[ind]
 

@@ -28,7 +28,11 @@ buttons_top = title_top + title_height + buttons_topgap
 done_color = (0, 170, 0) #finished level
 new_color = (170, 170, 170) #not finished, not locked
 locked_color = (90, 90, 90) #locked level
-highlight = 1.5
+
+select_highlight = 1.5
+selrect_color = (200, 200, 200)
+selrect_gap = 10
+selrect_thickness = 2
 
 button_font = None 
 
@@ -37,6 +41,7 @@ class _LevelButton:
         self.pos = pos
         self.level = level
         self.enabled = shared.levelmgr.unlocked(level)
+        self.selected = False
 
         # set color based on level deps/completion
         if not self.enabled:
@@ -60,13 +65,24 @@ class _LevelButton:
         if not (self.too_high() or self.too_low()):
             shared.canvas.blit(self.text, self.pos)
 
+        # draw border rectangle if selected
+        if self.selected:
+            w = self.text.get_width()
+            h = self.text.get_height()
+            rect = (self.pos.x - selrect_gap, self.pos.y - selrect_gap,
+                    w + 2*selrect_gap, h + 2*selrect_gap)
+            pygame.draw.rect(shared.canvas, selrect_color, rect, 
+                    selrect_thickness)
+
     def select(self):
+        self.selected = True
         # brighten the text image
         if self.enabled:
-            newcol = map(lambda x: min(x * highlight, 255), self.color)
+            newcol = map(lambda x: min(x * select_highlight, 255), self.color)
             self.text = button_font.render(self.level.name, 1, newcol)
 
     def deselect(self):
+        self.selected = False
         # back to normal
         self.text = button_font.render(self.level.name, 1, self.color)
 
@@ -117,6 +133,7 @@ class Main(Level):
         # select first
         self.selected = 0
         self.buttons[self.selected].select()
+        self.check_scroll()
 
     def step(self, elapsed):
         pass

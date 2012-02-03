@@ -199,8 +199,8 @@ class Main(Level):
         objects.create(image.Image, grid_path, (0, 0))
 
         # make the player
-        _Player.proxy_type = Player
-        objects.create(_Player, grid_step * Vec2d(5.5, 5.5))
+        player = objects.create(_Player, grid_step * Vec2d(5.5, 5.5))
+        userspace.space['player'] = player.proxy
 
     # called each step during the level
     def step(self, elapsed):
@@ -264,14 +264,12 @@ class Player:
 
 # internal Player
 class _Player:
-
+    proxy_type = Player
+    
     # object events
-
     def __init__(self, proxy, pos):
         self.pos = Vec2d(pos)
         self.sprite = pygame.image.load(player_path)
-
-        userspace.space['player'] = proxy
 
     def destroy(self):
         del userspace.space['player']

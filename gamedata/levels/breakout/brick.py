@@ -13,7 +13,7 @@ class Brick:
 class _Brick:
     proxy_type = Brick
     
-    def __init__(self, pos):
+    def __init__(self, proxy, pos):
         self.pos = pos
         self.x = pos.x
         self.y = pos.y

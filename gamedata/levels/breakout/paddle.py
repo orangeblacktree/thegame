@@ -25,7 +25,7 @@ class Paddle:
 class _Paddle:
     proxy_type = Paddle
 
-    def __init__(self, pos):
+    def __init__(self, proxy, pos):
         self.pos = pos
         self.dim = Vec2d(40, 10)
 

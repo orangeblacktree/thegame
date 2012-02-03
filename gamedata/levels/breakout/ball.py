@@ -13,7 +13,7 @@ class Ball:
 class _Ball:
     proxy_type = Ball
     
-    def __init__(self, pos):
+    def __init__(self, proxy, pos):
         self.radius = 10
         self.pos = pos
         self.vel = Vec2d(100,100)

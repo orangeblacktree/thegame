@@ -126,6 +126,7 @@ class LevelManager:
     def save_level_data(self, f):
         all_data = {}
         for ind, level in self.levels.iteritems():
+            # TODO this doesn't work the first time it's run
             all_data[ind] = level.data
         pickle.dump(all_data, f)
 

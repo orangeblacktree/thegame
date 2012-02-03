@@ -68,9 +68,9 @@ class Main(Level):
                 brick.broken = True
 
                 if ball.pos.x > brick.x + brick.width or ball.pos.x < brick.x:
-                    ball.vel.y *= -1 + random.random()-.5
+                    ball.vel.y *= -1
                 if ball.pos.y > brick.y + brick.height or ball.pos.y < brick.y:
-                    ball.vel.x *= -1 + random.random()-.5
+                    ball.vel.x *= -1
                     
             if ball.pos.y > paddle.pos.y - ball.radius and ball.pos.x > paddle.pos.x - ball.radius and ball.pos.x < paddle.pos.x + paddle.dim.x + ball.radius:
 

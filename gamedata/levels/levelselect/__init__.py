@@ -41,7 +41,7 @@ help_text = """
 # Welcome to thegame!
 # 
 # Select a level. If you're new to thegame, you might want to start with
-# 'Basics'. Have fun!
+# '%s'. Have fun!
 # 
 """
 
@@ -120,7 +120,8 @@ class Main(Level):
 
     def start(self):
         # make logo
-        logo = objects.create(image.Image, os.path.join('gamedata', 'images', 'logo.png'))
+        logo = objects.create(image.Image, os.path.join('gamedata', 'images', 'logo.png'), 
+                (0, 0), False) #don't convert for alpha transparency
         logo_left = (shared.dim.x - logo.image.get_width()) // 2
         logo.set_position(Vec2d(logo_left, logo_top))
 
@@ -150,7 +151,7 @@ class Main(Level):
         self.check_scroll()
 
         # set help
-        shared.gui.help_page.set_text(help_text)
+        shared.gui.help_page.set_text(help_text % (self.buttons[0].level.name))
 
     def step(self, elapsed):
         pass
@@ -163,6 +164,8 @@ class Main(Level):
                 self.select_next()
             elif event.key == pygame.K_RETURN:
                 self.click_selected()
+            elif event.key == pygame.K_ESCAPE:
+                shared.stop_game = True
 
     def check_scroll(self):
         selbutton = self.buttons[self.selected]
@@ -177,7 +180,9 @@ class Main(Level):
     def select_next(self):
         # if higher ok, deselect current and select it
         new = self.selected + 1
-        if new < len(self.buttons) and self.buttons[new].enabled:
+        while new < len(self.buttons) and not self.buttons[new].enabled:
+            new += 1
+        if new < len(self.buttons):
             self.buttons[self.selected].deselect()
             self.selected = new
             self.buttons[self.selected].select()
@@ -185,7 +190,9 @@ class Main(Level):
     def select_prev(self):
         # if lower ok, deselect current and select it
         new = self.selected - 1
-        if new >= 0 and self.buttons[new].enabled:
+        while new >= 0 and not self.buttons[new].enabled:
+            new -= 1
+        if new >= 0:
             self.buttons[self.selected].deselect()
             self.selected = new
             self.buttons[self.selected].select()

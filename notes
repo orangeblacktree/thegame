@@ -9,6 +9,9 @@ Todo
 
 - Handle both key down and key up keybinds.
 
+
+- Handle help and code window destroy events.
+
 Bugs
 ----
 

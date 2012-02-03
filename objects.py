@@ -9,14 +9,15 @@ proxy_map = {}
 destroy_requests = []
 
 def create(cons, *args):
-    obj = cons(*args)
-    world.append(obj)
-
-    # if type uses proxy_map, create one
     if hasattr(cons, 'proxy_type'):
         proxy = cons.proxy_type()
+        obj = cons(proxy, *args)
         obj.proxy = proxy
         proxy_map[proxy] = obj
+    else:
+        obj = cons(*args)
+
+    world.append(obj)
 
     return obj
 

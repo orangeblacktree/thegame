@@ -1,4 +1,5 @@
 # index [nextlevel] modulename dep1 dep2 dep3 ...
-1 2 breakout
-2 1 breakoutrainbow 1
-3 2 breakout
+1 basics
+10 11 breakout
+11 10 breakoutrainbow 1
+12 10 breakout

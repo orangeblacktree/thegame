@@ -1,10 +1,12 @@
-# interface visible to user code
+# object interface visible to user code
 class Object:
     pass
-
 # internal object
 class _Object:
-    def __init__(self):
+    proxy_type = Object
+
+    def __init__(self, proxy):
+        self.proxy = proxy
         pass
 
     def destroy(self):

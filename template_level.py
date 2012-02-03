@@ -11,21 +11,25 @@ import objects
 from vec2d import Vec2d
 from level import Level
 
-help_text = """
+helps = { 
+'template': """
 # 
 # This is a template level.
 # 
-"""
+""",
+
+}
 
 # the main level class
 class Main(Level):
     # called in the beginning of the game
     def __init__(self):
         Level.__init__(self)
+        self.name = "Template Level"
 
     # called when the level starts
     def start(self):
-        pass
+        shared.gui.help_page.set_text(helps['template'])
 
     # called each step during the level
     def step(self, elapsed):

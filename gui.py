@@ -109,6 +109,14 @@ entries = [
     "_Previous Tab", "<Control>Left",
     "Switch to previous tab",
     lambda *args: shared.gui.prev_page()), 
+  ("DetachHelp", None,
+    "_Detach Help Window", "<Control>D",
+    "Detach the help tab",
+    lambda *args: shared.gui.detach_help_page()), 
+  ("AttachHelp", None,
+    "_Attach Help Window", "<Control>G",
+    "Attach the help tab",
+    lambda *args: shared.gui.attach_help_page()), 
   ("Quit", gtk.STOCK_QUIT,
     "_Quit", "<Control>Q",
     "Exit the program",
@@ -141,6 +149,9 @@ ui_info ="""
       <separator/>
       <menuitem action='NextTab'/>
       <menuitem action='PrevTab'/>
+      <separator/>
+      <menuitem action='DetachHelp'/>
+      <menuitem action='AttachHelp'/>
       <separator/>
       <menuitem action='Quit'/>
     </menu>
@@ -203,6 +214,8 @@ class HelpPage:
         self.gui = gui
         self.is_help = True
         self.divider_text = '\n\n# ----------------------------------------------------------------------------\n'
+        self.window = None
+        self.attached = False
 
         # text box inside a scrolled window
         self.buf = gtksourceview.Buffer()
@@ -225,10 +238,57 @@ class HelpPage:
         self.attach()
 
     def attach(self):
-        # add self to notebook
-        self.gui.nb.append_page(self.sw, None)
+        if self.attached:
+            return
+
+        # remove detached window if exists
+        if self.window is not None:
+            self.remove_window()
+
+        # add self to notebook at 0
+        self.gui.nb.insert_page(self.sw, None, 0)
         self.gui.nb.set_tab_label_text(self.sw, "Help")
         self.gui.window.show_all()
+
+        # add self to pages list at 0
+        self.gui.pages.insert(0, self)
+
+        self.attached = True
+
+    def detach(self):
+        if not self.attached:
+            return
+
+        # remove from notebook
+        self.gui.nb.remove_page(0)
+        self.gui.pages.remove(self)
+
+        # create separate window
+        self.make_window()
+
+        self.attached = False
+
+    def make_window(self):
+        # make window
+        self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
+
+        # move slightly below-right of main window
+        x, y = shared.gtkwin.get_position()
+        w, h = shared.gtkwin.get_size()
+        h -= 50
+        self.window.resize(w, h)
+        self.window.move(x, y - h - 70)
+        self.window.set_title("thegame - help")
+
+        # on close, attach
+        self.window.connect("delete-event", lambda *args: self.attach())
+
+        # attach self
+        self.window.add(self.sw)
+        self.window.show_all()
+    def remove_window(self):
+        self.window.remove(self.sw)
+        self.window.destroy()
 
     def set_text(self, text):
         self.buf.set_text(text)
@@ -239,12 +299,18 @@ class HelpPage:
     def clear_text(self):
         self.buf.set_text("")
 
+    def close(self):
+        pass #can't close help page!
+
 class Gui:
     def __init__(self):
         self.runner = None
         self.window = shared.gtkwin
         self.new_page_num = 1
         self.pages = []
+
+        # on close, quit
+        self.window.connect("delete-event", do_quit)
 
         # table
         self.table = gtk.Table(3, 1, False)
@@ -296,10 +362,6 @@ class Gui:
 
         # make help tab and a new code tab
         self.help_page = HelpPage(self)
-        self.pages.append(self.help_page)
-
-        self.new_page()
-
         self.set_page(0) #focus help page
 
         # action!
@@ -315,6 +377,7 @@ class Gui:
         page = Page(self, name)
         self.pages.append(page)
         self.set_page(-1) #last page
+        self.focus_page()
         return page
 
     def set_page(self, ind):
@@ -467,3 +530,8 @@ class Gui:
         else:
             page.set_filename(os.path.basename(path))
             page.path = path
+
+    def detach_help_page(self):
+        self.help_page.detach()
+    def attach_help_page(self):
+        self.help_page.attach()

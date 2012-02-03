@@ -20,7 +20,7 @@ import levelmanager
 import objects
 
 background_color = (0,0,0) #black
-frame_rate = 40.0
+frame_rate = 30.0
 savedata_filename = os.path.join('userdata', 'savefile')
 
 shared.stop_game = False
@@ -41,9 +41,9 @@ def init():
             gtkscreen.get_height())
 
     pygame_pos = dim * 0.01
-    pygame_dim = Vec2d(800, 600)
-    gtk_pos = dim * (0.55, 0.4)
-    gtk_dim = dim * (0.44, 0.55)
+    pygame_dim = Vec2d(800, 640)
+    gtk_dim = Vec2d(640, 480)
+    gtk_pos = dim - gtk_dim - Vec2d(70, 70)
 
     shared.gtkwin.move(int(gtk_pos.x), int(gtk_pos.y))
     shared.gtkwin.resize(int(gtk_dim.x), int(gtk_dim.y))
@@ -92,9 +92,7 @@ def handle_events():
 
         if event.type == pygame.KEYDOWN:
             # some temporary key binds
-            if event.key == pygame.K_ESCAPE:
-                return False
-            elif event.key == pygame.K_F1:
+            if event.key == pygame.K_ESCAPE and shared.levelmgr.current_level != 0:
                 shared.levelmgr.request_goto_level(0)
             elif event.key == pygame.K_F2:
                 shared.levelmgr.request_next_level()

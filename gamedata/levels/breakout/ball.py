@@ -7,7 +7,7 @@ from vec2d import Vec2d
 # the user's interface to the Ball
 class Ball:
     def getPos(self):
-        return Vec2d(objects.proxy_map[self].getPos())
+        return objects.proxy_map[self].getPos()
         
 # the internal Ball object
 class _Ball:
@@ -19,7 +19,7 @@ class _Ball:
         self.vel = Vec2d(100,100)
         
     def getPos(self): #make sure to return a copy
-        return self.pos
+        return Vec2d(self.pos)
         
     def destroy(self):
         pass

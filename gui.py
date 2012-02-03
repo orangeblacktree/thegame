@@ -60,8 +60,9 @@ class Runner(KThread):
             code = compile(self.text, self.filename, "exec")
             userspace.run(code)
         except Exception as e:
+            userspace.output("Error: " + e.__str__())
             gtk.threads_enter()
-            shared.gui.set_status("Error: " + e.__str__())
+            shared.gui.set_status("Error! Check output console.")
             gtk.threads_leave()
         except SystemExit:
             gtk.threads_enter()
@@ -209,13 +210,12 @@ class Page:
         self.filename = filename
         self.gui.nb.set_tab_label_text(self.sw, filename)
 
+divider_text = '\n# ----------------------------------------------------------------------------\n'
 class HelpPage:
     def __init__(self, gui):
         self.gui = gui
         self.is_help = True
-        self.divider_text = '\n\n# ----------------------------------------------------------------------------\n'
         self.window = None
-        self.attached = False
 
         # text box inside a scrolled window
         self.buf = gtksourceview.Buffer()
@@ -226,7 +226,7 @@ class HelpPage:
         self.sw.add(self.text)
 
         self.buf.set_language(codelang)
-        self.text.set_show_line_numbers(True)
+        #self.text.set_show_line_numbers(True)
         self.text.set_smart_home_end(True)
         if codefont:
             self.text.modify_font(codefont)
@@ -234,11 +234,11 @@ class HelpPage:
         # can't edit help text
         self.text.set_editable(False)
 
-        # initially attached
-        self.attach()
+        # initially detached
+        self.detach()
 
     def attach(self):
-        if self.attached:
+        if hasattr(self, 'attached') and self.attached:
             return
 
         # remove detached window if exists
@@ -256,12 +256,13 @@ class HelpPage:
         self.attached = True
 
     def detach(self):
-        if not self.attached:
-            return
-
         # remove from notebook
-        self.gui.nb.remove_page(0)
-        self.gui.pages.remove(self)
+        if hasattr(self, 'attached'):
+            if self.attached:
+                self.gui.nb.remove_page(0)
+                self.gui.pages.remove(self)
+            else:
+                return
 
         # create separate window
         self.make_window()
@@ -293,11 +294,15 @@ class HelpPage:
     def set_text(self, text):
         self.buf.set_text(text)
     def append_text(self, text):
-        start, end = self.buf.get_bounds()
-        old_text = self.buf.get_text(start, end)
-        self.buf.set_text(old_text + self.divider_text + text)
+        end = self.buf.get_end_iter()
+        self.buf.insert(end, divider_text + text)
+
+        new_end = self.buf.get_end_iter()
+        self.buf.place_cursor(new_end)
+        self.text.scroll_mark_onscreen(self.buf.get_insert())
+
     def clear_text(self):
-        self.buf.set_text("")
+        self.buf.delete(*(self.buf.get_bounds()))
 
     def close(self):
         pass #can't close help page!

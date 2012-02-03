@@ -23,13 +23,16 @@ def wait(t):
     if (extra):
         time.sleep(extra)
 
-def myprint(s):
-    print s+"X"
-        
+# an 'output()' function for user code - print to the GUI.
+# TODO: Make this actually print to the GUI
+def output(s):
+    print s
+
 # the space visible to user code
 space = dict(
         Vec2d = vec2d.Vec2d,
         wait = wait,
+        output = output,
         )
 
 def run(code):

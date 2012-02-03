@@ -25,6 +25,15 @@ savedata_filename = os.path.join('userdata', 'savefile')
 
 shared.stop_game = False
 
+initial_help_text = """
+# 
+# Welcome to thegame!
+# 
+# Select a level. If you're new to thegame, you might want to start with
+# 'Basics 1'. Have fun!
+# 
+"""
+
 def init():
     # set WM_CLASS under X
     os.environ['SDL_VIDEO_X11_WMCLASS'] = "thegame"
@@ -33,7 +42,6 @@ def init():
     # initialise gtk
     gtk.threads_init()
     shared.gtkwin = gtk.Window(gtk.WINDOW_TOPLEVEL)
-    shared.gui = gui.Gui()
 
     # window sizes/positions
     gtkscreen = shared.gtkwin.get_screen()
@@ -67,6 +75,9 @@ def init():
     # set keybindings
     userspace.reset_keybindings()
 
+    # make the code editor gui
+    shared.gui = gui.Gui()
+
     # load levels and restore saved level data (if exists)
     shared.levelmgr = levelmanager.LevelManager()
 
@@ -78,6 +89,9 @@ def init():
         shared.levelmgr.load_level_data(f)
     except IOError:
         pass
+
+    # set initial help text
+    shared.gui.help_page.set_text(initial_help_text)
 
     # start the game!
     shared.levelmgr.start()
